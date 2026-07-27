@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Node — only ever installed transiently by the self-check workflow
+# (`npm install --no-save @mermaid-js/mermaid-cli`); never committed.
+node_modules/
+package-lock.json
+
+# Generated evidence. run-gates.sh writes this on every run, and the evidence
+# contract requires it to come from CI (runner=ci) — a committed copy would be
+# a local artifact masquerading as corroboration. See standards/evidence.md.
+evidence.json
+
+# Rendered diagram output. Diagrams are authored as mermaid inside .md files;
+# the SVGs are build products of the self-check workflow.
+*.svg

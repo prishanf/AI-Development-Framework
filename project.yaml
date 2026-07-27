@@ -1,0 +1,84 @@
+# AIDF's own manifest. The framework runs its own gates against itself.
+# If AIDF cannot pass AIDF, it is not ready to ship.
+#
+# This is a documentation repository, so its "build" is a consistency check
+# and its "tests" are the framework's own verification scripts.
+
+framework:
+  name: ai-development-framework
+  version: 2.0.0
+  project_id: aidf
+
+repository:
+  integration_branch: main
+  production_branch: main
+  feature_branch_pattern: "feat/{issue}-{slug}"
+  worktree_policy: recommended-for-parallel-or-risky-work
+  qa_branch: ""
+
+commands:
+  install: ""
+  format: ""
+  lint: "sh reference/scripts/check-consistency.sh"
+  typecheck: ""
+  test: "sh reference/scripts/self-test.sh"
+  build: "sh reference/scripts/validate-manifest.sh project.yaml"
+
+documents:
+  root: .
+  specs: examples
+  plans: examples
+  architecture: standards
+  decisions: standards
+  wiki: guide
+  releases: CHANGELOG.md
+  state: templates/project-state.md
+  conventions: CONTRIBUTING.md
+
+gates:
+  spec_approval_required: true
+  pull_request_approval_required: true
+  specialist_review_required: true
+  production_approval_required: true
+
+evidence:
+  corroborating_runners: [ci]
+  allow_local_runner: false
+  require_evidence_artifact: true
+  pr_size_soft_cap_lines: 400
+
+tags:
+  enabled: [ui, api, database, security, mcp-write, infra, dependency, release, docs]
+  preview_required_for: [ui, api, database]
+  track_c_forced_by: [database, security, mcp-write, infra, release]
+
+environments:
+  local:
+    required: true
+    data_policy: synthetic-or-developer-owned
+  preview:
+    required_for_tags: []
+    state: not-applicable
+    data_policy: none
+    cleanup: not-applicable
+  qa:
+    enabled: false
+    state: resettable
+    data_policy: approved-non-production-data
+  production:
+    protected: true
+    data_policy: none
+
+ai_safety:
+  untrusted_content_is_data: true
+  code_egress_policy: all-source-permitted-public-repository
+  agent_credential_scope: least-privilege-per-session
+  mcp_servers_pinned: true
+
+adapters:
+  enabled: [generic]
+  instruction_files:
+    generic: AGENTS.md
+    claude: .claude/CLAUDE.md
+    codex: .codex/AGENTS.md
+    cursor: .cursor/rules/aidf.mdc

@@ -1,0 +1,129 @@
+# AIDF project manifest.
+# Validated by reference/scripts/validate-manifest.sh against schemas/project.schema.json.
+# An empty required command means the gate FAILS. It never means "skip".
+
+framework:
+  name: ai-development-framework
+  version: 2.0.0
+  project_id: replace-with-project-id
+
+repository:
+  integration_branch: main
+  production_branch: main
+  feature_branch_pattern: "feat/{issue}-{slug}"
+  worktree_policy: recommended-for-parallel-or-risky-work
+  # Leave empty for trunk-based (the default). Setting this adds a `staged`
+  # lifecycle state; record why in the project's own documentation.
+  qa_branch: ""
+
+commands:
+  install: ""
+  format: ""
+  lint: ""
+  typecheck: ""
+  test: ""
+  build: ""
+  # Optional; only required when the corresponding tag is used.
+  migrate: ""
+  seed: ""
+  smoke: ""
+
+documents:
+  root: docs
+  specs: docs/specs
+  plans: docs/plans
+  architecture: docs/architecture
+  decisions: docs/decisions
+  wiki: docs/wiki
+  releases: docs/releases
+  state: docs/project-state.md
+  conventions: docs/conventions.md
+  environments: docs/environments.md
+  migrations: docs/migrations
+  api_contracts: docs/api
+  mcp_capabilities: docs/mcp
+  deployments: docs/deployments
+
+# Four gates, not ten. Each maps to something a human or CI actually enforces.
+gates:
+  spec_approval_required: true          # Track B and C cannot proceed without it
+  pull_request_approval_required: true  # every PR, every track
+  specialist_review_required: true      # Track C: named reviewer for security/database/infra
+  production_approval_required: true    # every production deployment
+
+# Which runners may satisfy a gate. See standards/evidence.md.
+# `local` is off by default: a gate satisfied on a developer machine is not
+# reproducible and cannot be audited after the fact.
+evidence:
+  corroborating_runners: [ci]
+  allow_local_runner: false
+  require_evidence_artifact: true
+  pr_size_soft_cap_lines: 400
+
+# Risk tags are DEFINED in standards/quality-gates.md. This section only enables
+# them and binds project-specific commands. Do not restate what a tag requires.
+tags:
+  enabled: [ui, api, database, security, mcp-write, infra, dependency, release, docs]
+  preview_required_for: [ui, api, database]
+  track_c_forced_by: [database, security, mcp-write, infra, release]
+
+environments:
+  local:
+    required: true
+    data_policy: synthetic-or-developer-owned
+  preview:
+    required_for_tags: [ui, api, database]
+    state: isolated-and-ephemeral
+    data_policy: approved-production-clone-plus-synthetic-data
+    cleanup: on-pull-request-close
+  qa:
+    enabled: false
+    state: resettable
+    data_policy: approved-non-production-data
+  production:
+    protected: true
+    data_policy: real-data
+
+database:
+  migration_types: [drizzle, raw-sql]
+  migration_policy: versioned-forward-only
+  production_clone_policy: explicit-data-owner-approval-required
+  synthetic_seed_policy: required-for-preview-scenarios
+  production_seed_policy: prohibited-except-approved-reference-data
+  application_role_may_migrate: false
+
+api:
+  contract_required_for_changed_apis: true
+  nfr_targets: project-defined-or-explicitly-pending
+  authorization_tests_required: true
+
+mcp:
+  enabled: false
+  protocol_revision: ""
+  direct_database_tools: prohibited
+  authenticated_writes: explicit-human-confirmation-required
+  audit_events_required: true
+
+security:
+  secrets_in_worktrees: forbidden
+  destructive_actions: ask-first
+  external_messages: human-confirmed
+  server_side_input_validation: required
+  object_level_authorization_tests: required
+  secret_scanning: required
+  threat_model_for_high_risk_changes: required
+
+# Agent-workflow safety. See standards/ai-safety.md.
+ai_safety:
+  untrusted_content_is_data: true
+  code_egress_policy: replace-with-your-policy   # e.g. all-source-permitted | no-customer-data | approved-repos-only
+  agent_credential_scope: least-privilege-per-session
+  mcp_servers_pinned: true
+
+adapters:
+  enabled: [generic]
+  instruction_files:
+    generic: AGENTS.md
+    claude: .claude/CLAUDE.md
+    codex: .codex/AGENTS.md
+    cursor: .cursor/rules/aidf.mdc
