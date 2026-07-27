@@ -60,3 +60,5 @@ Not covered by automation:
 ## Reviewer guidance
 
 Please focus on <behavior, boundary, security, or performance concern>.
+
+Human review begins only after AI review has posted the ready-for-human comment on this PR (see [commands/review.md](../commands/review.md)). AI review does not replace required human approval.

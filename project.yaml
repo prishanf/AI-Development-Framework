@@ -6,9 +6,14 @@
 
 framework:
   name: ai-development-framework
-  version: 2.0.0
+  version: 4.0.0
   project_id: aidf
 
+# This project deliberately opts out of the default GitFlow model (see
+# standards/branching.md#opting-out-of-develop-trunk-based-mode): it is a
+# documentation-and-scripts repository with no deployable application, so a
+# continuously-deployed QA environment on `develop` has nothing to deploy.
+# "build" here is a consistency check, not an artifact that ships.
 repository:
   integration_branch: main
   production_branch: main
@@ -37,6 +42,7 @@ documents:
 
 gates:
   spec_approval_required: true
+  plan_approval_required: true
   pull_request_approval_required: true
   specialist_review_required: true
   production_approval_required: true

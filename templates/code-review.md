@@ -1,7 +1,7 @@
 ---
 type: code-review
 track: B
-required_when: "every Track B and Track C pull request"
+required_when: "every Track B and Track C pull request (Track A: host review only is enough)"
 reviewer: ""
 pr: ""
 date: YYYY-MM-DD
@@ -21,10 +21,17 @@ date: YYYY-MM-DD
 - Evidence: <what demonstrates the issue>
 - Impact: <user, system, or security impact>
 - Suggested direction: <fix or question>
+- Host comment: <URL or `pending`>
 
 ### [P1] <important issue>
 
 <Repeat as needed. Use P2 for normal, P3 for polish.>
+
+## Host publication
+
+- PR review: <URL of the published review on the host>
+- Inline comments: <count or `none`>
+- Ready-for-human comment: `pending | posted` — <URL when posted>
 
 ## Verification performed
 
@@ -34,5 +41,6 @@ date: YYYY-MM-DD
 
 ## Decision
 
-- Result: `approve | request-changes | comment`
-- Conditions: <conditions or none>
+- Result: `request-changes | comment | ready-for-human`
+- Conditions: <remediation required, accepted follow-ups, or none>
+- Next action: `build` (remediate) | `review` (re-pass) | `human review`

@@ -32,6 +32,7 @@ These run before merge. This table governs pull requests only.
 | Unit tests | Required | Required | Required |
 | New test fails against pre-change code | — | Required | Required |
 | Secret scan | Required | Required | Required |
+| AI review complete (findings published; P0/P1 fixed or accepted; ready-for-human comment on the PR) | Required | Required | Required |
 | Human PR approval | Required (1) | Required (1) | Required (1) + named specialist |
 | Preview deploy and smoke test | — | Required if `ui`/`api`/`database` | Required |
 | UI QA sign-off | — | Required if `ui` | Required if `ui` |
@@ -39,6 +40,8 @@ These run before merge. This table governs pull requests only.
 | Migration validation and schema review | — | Required if `database` | Required if state changes |
 | Threat model / specialist review | — | — | Required for `security`, `mcp-write`, `infra` |
 | Dependency provenance and vulnerability diff | — | Required if `dependency` | Required if `dependency` |
+
+AI review is a **process gate**, evidenced by the PR review thread and the ready-for-human comment — not by `runner: ci`. It never replaces human PR approval. See [guide/03-workflow.md](../guide/03-workflow.md) and [commands/review.md](../commands/review.md).
 
 ## Release-time gates
 

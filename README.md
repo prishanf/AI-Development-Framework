@@ -2,7 +2,7 @@
 
 **AIDF** is a lightweight, AI-agnostic operating system for building software with coding agents. One shared workflow, vocabulary, document lifecycle, and set of safety boundaries — usable with Claude Code, Codex, Cursor, Gemini CLI, Aider, OpenHands, or whatever comes next.
 
-**Version:** 2.0.0 · **Status:** usable foundation with running gates
+**Version:** 4.0.0 · **Status:** usable foundation with running gates
 
 ## Process proportional to risk
 
@@ -11,9 +11,9 @@ Most frameworks fail because they cost the same for a typo as for a schema migra
 | | **Track A — Trivial** | **Track B — Standard** | **Track C — High risk** |
 |---|---|---|---|
 | **When** | No behavior change: docs, formatting, comments | The default: any behavior change | `database`, `security`, `mcp-write`, `infra`, `release` |
-| **Documents** | **The PR. That's it.** | Spec → plan → PR → review → release note | Track B + what the tags require |
+| **Documents** | **The PR. That's it.** | Spec → plan → PR → AI review → human review → release note | Track B + what the tags require |
 | **Preview env** | No | Only if `ui`, `api`, or `database` | Yes |
-| **Gates** | Lint, test, build + 1 approval | + PR approval against the spec | + specialist review + production approval |
+| **Gates** | Lint, test, build + AI review + 1 approval | + PR approval against the spec | + specialist review + production approval |
 
 A Track A change should ship in fifteen minutes with no preview infrastructure. If it doesn't, the framework is broken — not you. Full details: [guide/02-tracks.md](guide/02-tracks.md).
 
@@ -31,11 +31,12 @@ The agent's job is not to assert outcomes; it is to produce artifacts CI can cor
 ```bash
 cp templates/project.yaml project.yaml         # 1. fill in your commands and branches
 sh reference/scripts/validate-manifest.sh project.yaml
-cp -r reference/github/workflows/. .github/workflows/   # 2. gates that actually run
+git switch -c develop main && git push -u origin develop  # 2. create the QA integration branch
+cp -r reference/github/workflows/. .github/workflows/   # 3. gates that actually run
 cp reference/github/PULL_REQUEST_TEMPLATE.md .github/
 ```
 
-Then read [guide/01-overview.md](guide/01-overview.md) for the mental model and [guide/02-tracks.md](guide/02-tracks.md) for the day-to-day. Protect your integration branch and require Code Owner review — [reference/README.md](reference/README.md) explains why that step is the one that makes every gate real.
+Then read [guide/01-overview.md](guide/01-overview.md) for the mental model and [guide/02-tracks.md](guide/02-tracks.md) for the day-to-day. Protect `main` and `develop` and require Code Owner review — [reference/README.md](reference/README.md) explains why that step is the one that makes every gate real. Default branching is GitFlow (`main` + `develop` + feature/release/hotfix branches, see [standards/branching.md](standards/branching.md)); a project with no need for a persistent QA environment can opt out to trunk-based instead.
 
 ## The lifecycle
 
@@ -46,13 +47,23 @@ flowchart LR
     track -->|B / C| spec[Spec + classify]
     spec --> approve{Human approves}
     approve -->|No| spec
-    approve -->|Yes| plan[Plan]
-    plan --> build[Build + tests]
+    approve -->|Yes| uitag{ui tag?}
+    uitag -->|Yes| design[Design + throwaway mockup]
+    uitag -->|No| plan
+    design --> designapprove{Human approves both}
+    designapprove -->|No| design
+    designapprove -->|Yes| plan[Plan]
+    plan --> planapprove{Human approves plan}
+    planapprove -->|No| plan
+    planapprove -->|Yes| build[Worktree off develop, build + tests]
     build --> verify[Verify: corroborated evidence]
-    verify --> pr[Pull request]
-    pr --> review[AI + human review]
-    review --> merge[Merge]
-    merge --> release[Release + documentation]
+    verify --> pr[Pull request to develop]
+    pr --> aireview[AI review on PR]
+    aireview -->|findings| fix[Build remediates]
+    fix --> aireview
+    aireview -->|ready for human| humanreview[Human review]
+    humanreview --> merge[Merge to develop, deploy QA]
+    merge --> release[Release branch -> main + documentation]
     build -.->|stop condition| halt[Stop, hand back]
 ```
 
@@ -74,7 +85,7 @@ flowchart LR
 |---|---|
 | `guide/` | Read first: overview, tracks, workflow, roles, documents, decisions, commands |
 | `standards/` | Configure once: gates, evidence, testing, AI safety, security, environments, database, API, MCP, observability |
-| `commands/` | Seven agent prompt contracts |
+| `commands/` | Eight agent prompt contracts |
 | `templates/` | Copy-ready documents, each tagged with the track that needs it |
 | `schemas/` | Machine-readable contracts for the manifest and evidence |
 | `reference/` | Working GitHub Actions + scripts. A reference, not the contract |
@@ -84,7 +95,7 @@ flowchart LR
 
 ## Compatibility contract
 
-An integration is AIDF-compatible when it can read the manifest, reach the seven command contracts, preserve the document lifecycle and classification, respect track selection, **distinguish claimed from corroborated evidence**, honor the stop conditions, treat observed content as data, and leave merge and release decisions to authorized humans or CI. Full checklist: [adapters/README.md](adapters/README.md).
+An integration is AIDF-compatible when it can read the manifest, reach the eight command contracts, preserve the document lifecycle and classification, respect track selection, **distinguish claimed from corroborated evidence**, honor the stop conditions, treat observed content as data, and leave merge and release decisions to authorized humans or CI. Full checklist: [adapters/README.md](adapters/README.md).
 
 ## Versioning
 

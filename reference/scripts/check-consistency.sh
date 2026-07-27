@@ -66,14 +66,17 @@ for rel in ("diagrams/lifecycle.md", "diagrams/quality-gates.md"):
     if "canonical" not in read(rel).lower():
         problems.append("%s: must state which file it is derived from" % rel)
 
-# A staging branch is not part of the default model.
+# GitFlow (main + develop + release/hotfix branches) is the default model as
+# of v3.0.0 -- see standards/branching.md. A project may still opt out to
+# trunk-based, but nothing in this repository should claim trunk-based is
+# the only supported shape, or that a release/staging branch is disallowed.
 for rel in walk():
     body = read(rel)
     if rel in (canonical, "standards/branching.md", "diagrams/deployment.md",
                "CHANGELOG.md", "reference/scripts/check-consistency.sh"):
         continue
-    if re.search(r"\bstaging branch\b|Deploy staging|Staging QA", body):
-        problems.append("%s: references a staging branch, which is not in the default model" % rel)
+    if re.search(r"no staging branch|staging branch.*not (?:in|part of) the default model", body):
+        problems.append("%s: describes trunk-based as the only default model, which is stale since v3.0.0" % rel)
 
 # -------------------------------------------------------- tag taxonomy
 gates_doc = read("standards/quality-gates.md")
@@ -124,6 +127,34 @@ for rel in (".claude/CLAUDE.md", ".codex/AGENTS.md", ".cursor/rules/aidf.mdc"):
     if re.search(r"(?<!`)/(?:spec|plan|build|review|ship)\b", body) and \
        not os.path.isdir(os.path.join(root, os.path.dirname(rel), "commands")):
         problems.append("%s: advertises slash commands that this repository does not ship" % rel)
+
+# ---------------------------------------------- every command has a contract,
+# ---------------------------------------------- every contract is documented
+# guide/04-roles.md says "a role without a contract is decoration and does not
+# belong in this list" -- but nothing enforced that a role's linked contract
+# actually exists, or that a file in commands/ is reachable from the reference
+# table. That gap is exactly how the design gate went undocumented as a
+# command for two releases. Close it mechanically.
+command_files = {os.path.splitext(n)[0] for n in os.listdir(os.path.join(root, "commands")) if n.endswith(".md")}
+
+ref_doc = read("guide/07-commands.md")
+ref_table = set(re.findall(r"^\| `([a-z-]+)`", ref_doc, re.M))
+if not ref_table:
+    problems.append("guide/07-commands.md: no commands found in the reference table")
+missing_from_ref = command_files - ref_table
+extra_in_ref = ref_table - command_files
+for name in missing_from_ref:
+    problems.append("commands/%s.md: exists but is not listed in guide/07-commands.md" % name)
+for name in extra_in_ref:
+    problems.append("guide/07-commands.md: lists `%s`, but commands/%s.md does not exist" % (name, name))
+
+roles_doc = read("guide/04-roles.md")
+for name in re.findall(r"\[`([a-z-]+)`\]\(\.\./commands/([a-z-]+)\.md\)", roles_doc):
+    label, target = name
+    if label != target:
+        problems.append("guide/04-roles.md: role links to commands/%s.md under the label `%s`" % (target, label))
+    if target not in command_files:
+        problems.append("guide/04-roles.md: links to commands/%s.md, which does not exist" % target)
 
 # ------------------------------------------------------------------- report
 if problems:

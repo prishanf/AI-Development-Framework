@@ -37,7 +37,7 @@ A framework that is too heavy for small changes does not get followed for large 
 | Spec agent | Clarifying and structuring intent | Inspect context, draft spec/questions |
 | Planning agent | Mapping intent onto the repository | Inspect, propose a bounded plan |
 | Build agent | Bounded implementation and tests | Edit within approved scope, run checks |
-| Review agent | Defect and risk discovery | Inspect diff, run read-only checks, report |
+| Review agent | Defect and risk discovery on the open PR | Inspect diff, publish findings, drive remediation handoff, mark ready for human |
 | CI | Repeatable verification and deployment | Run configured automation, corroborate evidence |
 
 ## The rule of handoff

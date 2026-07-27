@@ -60,3 +60,14 @@ branch: ""
 - [ ] Verification commands recorded.
 - [ ] Documentation decision made.
 - [ ] PR evidence prepared.
+
+## Approval
+
+- Decision: `pending | approved | rejected`
+- Approver: <name or role>
+- Date: YYYY-MM-DD
+- Notes: <scope trade-offs, sequencing concerns, or conditions>
+
+## Agent instruction
+
+For Track B and Track C changes, do not begin implementation until `Approval.decision` is `approved`. Track A has no plan document and skips this gate. If repository inspection during planning contradicts the approved spec, or reveals the change needs a higher track, stop and return to the spec before requesting plan approval.

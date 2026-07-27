@@ -25,10 +25,22 @@ Do not re-classify the change — the track and tags were set at spec approval. 
 repository shows the classification is wrong, say so and send it back rather than
 quietly planning to a different risk level.
 
+If the change is tagged `ui`, treat the approved design and its mockup as authoritative
+for layout and flow — reference specific screens/states from it in the change map
+rather than re-deciding UI structure in the plan. If the plan reveals the mockup missed
+something material, say so and send it back to the design gate; do not quietly design
+around it here.
+
 Flag any mismatch between the approved spec and the repository.
 
-Return: plan, assumptions, risks, files to inspect or change, and whether a human
-approval gate is required before build.
+For Track B and Track C, the plan's `Approval` block is a hard gate, not a
+recommendation: leave `Approval.decision` as `pending` and tell the human explicitly
+that implementation must not begin until they set it to `approved`. Track A has no
+plan document and this gate does not apply to it.
+
+Return: plan, assumptions, risks, files to inspect or change, and the explicit
+statement that build must wait for plan approval (Track B/C) or that no plan approval
+gate applies (Track A).
 ```
 
 ## Completion criteria
@@ -38,3 +50,4 @@ approval gate is required before build.
 - Verification is concrete and uses the manifest's commands.
 - Assumptions are listed separately from findings.
 - Scope drift and classification mismatches are surfaced, not absorbed.
+- For Track B/C, `Approval.decision` is left `pending` and the response states plainly that build must wait for it.

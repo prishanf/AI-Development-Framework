@@ -8,6 +8,10 @@ Roles are behavior contracts, not model identities. One agent can perform severa
 
 Turns an idea into a testable spec, including its classification. It may inspect the repository and ask questions. It must not silently decide product scope or begin implementation.
 
+### Design agent → [`design`](../commands/design.md)
+
+Produces the design description and, by default, a throwaway static mockup for a `ui`-tagged change — the artifact a human actually validates layout and flow against, before a plan is written. Distinct from the preview coordinator below: this runs before planning and is never built into the real implementation. See [standards/ui-and-preview.md](../standards/ui-and-preview.md).
+
 ### Planning agent → [`plan`](../commands/plan.md)
 
 Maps the approved outcome to the repository. It identifies likely files, dependencies, tests, migrations, risks, and a sequence of small tasks. It states assumptions and unknowns explicitly, because a named assumption is what later triggers a stop condition.
@@ -26,7 +30,7 @@ Prepares an isolated, clickable review target with controlled data and gathers U
 
 ### Review agent → [`review`](../commands/review.md)
 
-Looks for defects, regressions, security issues, missing tests, and scope drift. It prioritizes actionable findings and cites file/line evidence. It does not rewrite the feature to make a finding disappear.
+Owns `ai_reviewing` after the PR is open. Looks for defects, regressions, security issues, missing tests, and scope drift; publishes prioritized findings on the PR; hands P0/P1 remediation back to `build`; and posts the ready-for-human comment only when blocking findings are fixed or accepted. It does not rewrite the feature to make a finding disappear while acting as review, and it never replaces human PR approval.
 
 ### Release agent → [`ship`](../commands/ship.md)
 

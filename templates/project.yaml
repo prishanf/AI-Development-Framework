@@ -4,17 +4,26 @@
 
 framework:
   name: ai-development-framework
-  version: 2.0.0
+  version: 4.0.0
   project_id: replace-with-project-id
 
+# GitFlow by default: main (production) + develop (QA, continuously deployed)
+# as long-lived branches, feature/fix/release/hotfix as short-lived ones. See
+# standards/branching.md. To opt out and run trunk-based instead, set
+# integration_branch to main and qa_branch to "" -- and record why in the
+# project's own documentation.
 repository:
-  integration_branch: main
+  integration_branch: develop
   production_branch: main
   feature_branch_pattern: "feat/{issue}-{slug}"
-  worktree_policy: recommended-for-parallel-or-risky-work
-  # Leave empty for trunk-based (the default). Setting this adds a `staged`
-  # lifecycle state; record why in the project's own documentation.
-  qa_branch: ""
+  release_branch_pattern: "release/{version}"
+  hotfix_branch_pattern: "hotfix/{issue}-{slug}"
+  # Required for parallel work, long-running or Track C changes, and for the
+  # persistent main/develop checkouts GitFlow assumes. See standards/worktrees.md.
+  worktree_policy: required-for-track-c-recommended-otherwise
+  # The branch whose deployment is the QA environment. "develop" under the
+  # default GitFlow model; leave empty only when opting out (trunk-based).
+  qa_branch: develop
 
 commands:
   install: ""
@@ -35,6 +44,7 @@ documents:
   architecture: docs/architecture
   decisions: docs/decisions
   wiki: docs/wiki
+  designs: docs/design         # design docs + throwaway mockups; see standards/ui-and-preview.md
   releases: docs/releases
   state: docs/project-state.md
   conventions: docs/conventions.md
@@ -44,12 +54,13 @@ documents:
   mcp_capabilities: docs/mcp
   deployments: docs/deployments
 
-# Four gates, not ten. Each maps to something a human or CI actually enforces.
+# Five gates, not ten. Each maps to something a human or CI actually enforces.
 gates:
   spec_approval_required: true          # Track B and C cannot proceed without it
+  plan_approval_required: true          # Track B and C: no code until the plan is approved
   pull_request_approval_required: true  # every PR, every track
   specialist_review_required: true      # Track C: named reviewer for security/database/infra
-  production_approval_required: true    # every production deployment
+  production_approval_required: true    # every production deployment (release/<version> -> main)
 
 # Which runners may satisfy a gate. See standards/evidence.md.
 # `local` is off by default: a gate satisfied on a developer machine is not
@@ -77,7 +88,7 @@ environments:
     data_policy: approved-production-clone-plus-synthetic-data
     cleanup: on-pull-request-close
   qa:
-    enabled: false
+    enabled: true       # continuously deployed from repository.qa_branch (develop)
     state: resettable
     data_policy: approved-non-production-data
   production:

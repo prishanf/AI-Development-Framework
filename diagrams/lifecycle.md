@@ -15,20 +15,31 @@ flowchart TD
     questions -->|No| classify[Classify: track, risk, tags]
     classify --> approval{Human approves scope?}
     approval -->|No| spec
-    approval -->|Yes| issue[Create issue]
+    approval -->|Yes| uitag{ui tag?}
+    uitag -->|Yes| design[Design: wireframes/screens]
+    uitag -->|No| issue[Create issue]
+    design --> designapprove{Human approves design?}
+    designapprove -->|No| design
+    designapprove -->|Yes| issue
     issue --> plan[Implementation plan]
-    plan --> build[Branch / worktree, implement + test]
+    plan --> planapprove{Human approves plan? Track B/C}
+    planapprove -->|No| plan
+    planapprove -->|Yes| build[Feature worktree off develop, implement + test]
 
     build --> verify[Verify: emit corroborated evidence]
     verify --> preview{ui, api or database tag?}
     preview -->|Yes| previewenv[Preview env + UI QA]
-    preview -->|No| pr[Open PR]
+    preview -->|No| pr[Open PR to develop]
     previewenv --> pr
 
-    pr --> review[AI + human review]
-    review --> merge[Merge to main]
-    merge --> relapprove{Production approval}
-    relapprove --> release[Deploy via CI]
+    pr --> aireview[AI review: publish findings on PR]
+    aireview -->|P0/P1 findings| remediate[Build remediates + re-verify]
+    remediate --> aireview
+    aireview -->|ready for human| humanreview[Human review + approval]
+    humanreview --> merge[Merge to develop, deploy QA]
+    merge --> relbranch[Release branch: QA hardening]
+    relbranch --> relapprove{Production approval}
+    relapprove --> release[Merge to main, deploy via CI]
     release --> observe[Observation window]
     observe --> archive[Update durable docs + state]
 

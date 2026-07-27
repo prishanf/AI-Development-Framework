@@ -26,7 +26,7 @@ An adapter must:
 
 1. point to `AGENTS.md`;
 2. identify the project manifest;
-3. make the seven command contracts reachable — by whatever mechanism the surface offers;
+3. make the eight command contracts reachable — by whatever mechanism the surface offers;
 4. preserve human approval and release gates;
 5. promise nothing the repository does not ship;
 6. stay short enough to audit in one screen.
@@ -38,7 +38,7 @@ Do not duplicate framework content in a vendor file. Duplication drifts, and the
 An integration is AIDF-compatible when it can do all of the following. Check them honestly — a partial adapter is fine if you know which part is missing.
 
 - [ ] Read the project manifest and repository guidance before acting.
-- [ ] Reach all seven command contracts (`spec`, `plan`, `build`, `validate`, `preview`, `review`, `ship`).
+- [ ] Reach all eight command contracts (`spec`, `design`, `plan`, `build`, `validate`, `preview`, `review`, `ship`).
 - [ ] Preserve the document lifecycle and required front matter, including the classification block.
 - [ ] Respect track selection — and not produce Track B artifacts for a Track A change.
 - [ ] Report changed files, checks run, failures, risks, and open questions in the output contract's five parts.
