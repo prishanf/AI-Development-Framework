@@ -4,7 +4,7 @@
 
 framework:
   name: ai-development-framework
-  version: 3.0.0
+  version: 3.1.0
   project_id: replace-with-project-id
 
 # GitFlow by default: main (production) + develop (QA, continuously deployed)
@@ -44,6 +44,7 @@ documents:
   architecture: docs/architecture
   decisions: docs/decisions
   wiki: docs/wiki
+  designs: docs/design         # design docs + throwaway mockups; see standards/ui-and-preview.md
   releases: docs/releases
   state: docs/project-state.md
   conventions: docs/conventions.md

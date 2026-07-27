@@ -26,10 +26,13 @@ criteria, constraints, risks, and open questions. Ask only questions whose answe
 change scope, safety, compatibility, or release risk. Do not write implementation code.
 
 If the classification includes the `ui` tag, do not proceed to planning once the spec is
-approved. State explicitly that a design gate applies next: a human design/product owner
-must approve `templates/design.md` (approved screens or wireframes, and every required
-state — see standards/ui-and-preview.md) before an implementation plan is written. Name
-this as the next step even if you are not asked to produce the design document yourself.
+approved. State explicitly that a design gate applies next, via the `design` command: a
+human design/product owner must approve `templates/design.md` — description, states, and
+by default a clickable static mockup with mock data, not just prose — before an
+implementation plan is written. Say plainly, here, that a mockup is coming, so the human
+isn't surprised by it later: see standards/ui-and-preview.md for what the mockup is and
+why it's separate from the Preview environment that comes after build. Name this as the
+next step even if you are not asked to produce the design document yourself.
 
 Return: draft spec, recommended track and tags with reasoning, questions, assumptions,
 related files, whether a design gate applies (`ui` tag), and the next human decision.
@@ -45,3 +48,4 @@ related files, whether a design gate applies (`ui` tag), and the next human deci
 - Unknowns are either questions or low-risk recorded assumptions.
 - Status remains `draft` until a human approves it.
 - If tagged `ui`, the response names the design gate as the next step before planning — it does not silently skip from spec approval to planning.
+- If tagged `ui`, the response says plainly that a mockup will be produced by default, so this is not a surprise at design-approval time.

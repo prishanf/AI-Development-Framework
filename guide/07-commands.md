@@ -5,14 +5,15 @@ The core commands are intent-oriented contracts. An adapter can expose them as s
 | Command | Purpose | Mutates files? | Human gate |
 |---|---|---:|---|
 | `spec` | Clarify and draft a feature spec, including its classification | Draft only | Approve scope and track |
-| `plan` | Convert approved scope into a repository plan | Optional plan file | Approve approach for Track C |
+| `design` | Produce a design and, by default, a throwaway mockup (`ui` tag) | Design doc + mockup files | Approve design and mockup before planning |
+| `plan` | Convert approved scope into a repository plan | Optional plan file | Approve plan (Track B/C) before build |
 | `build` | Implement the approved plan | Yes | Scope and external actions |
 | `validate` | Run the track's required gates and emit evidence | No by default | Waiver for a failed gate |
-| `preview` | Prepare a clickable review target and UI evidence | Scoped review artifacts | UI QA approval |
+| `preview` | Prepare a clickable review target of the real build and UI evidence | Scoped review artifacts | UI QA approval |
 | `review` | Find defects and missing evidence | No by default | Accept/reject findings |
 | `ship` | Prepare release and durable docs | Docs only by default | Merge/release approval |
 
-`spec`, `plan`, `build`, `review`, and `ship` are the portable core; every AIDF-compatible surface must expose them. `validate` and `preview` are operational extensions enabled by projects that adopt the gate layer.
+`spec`, `plan`, `build`, `review`, and `ship` are the portable core; every AIDF-compatible surface must expose them. `design`, `validate`, and `preview` are operational extensions, gated by tag or by project adoption of the gate layer. Do not confuse `design`'s mockup with `preview`'s review target — one is throwaway and precedes the plan, the other is the real implementation and follows the build. See [standards/ui-and-preview.md](../standards/ui-and-preview.md).
 
 ## Common invocation shape
 

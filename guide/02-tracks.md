@@ -11,7 +11,7 @@ A track is chosen once, when the change is classified, and it determines three t
 | **Risk level** | `low` | `standard` | `high` |
 | **When** | No behavior change: docs, comments, formatting, isolated non-functional edits | The default. Any user-visible or behavioral change | Any `database`, `security`, `mcp-write`, `release`, or `infra` tag |
 | **Spec** | Not required | Required and approved before planning | Required, plus explicit risk review |
-| **Documents** | PR only | Spec → plan → PR → review → release note (**5**) | Track B plus the artifacts its tags demand |
+| **Documents** | PR only | Spec → plan → PR → review → release note (**5**) — plus a design and, by default, a mockup, if tagged `ui` | Track B plus the artifacts its tags demand |
 | **Preview env** | No | Only if tagged `ui`, `api`, or `database` | Per tags; always for `database` |
 | **Gates** | Format, lint, typecheck, test, build + 1 human approval | Track A gates + PR approval against the spec | Track B gates + specialist review + production approval + rollback record |
 | **Merge** | Any authorized reviewer | Authorized reviewer | Authorized reviewer + named specialist |

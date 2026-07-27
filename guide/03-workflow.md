@@ -10,7 +10,7 @@ The lifecycle below is the full Track C path. Track B skips the tag-driven artif
 2. **Specify** — draft a feature spec; ask questions where facts or intent are missing.
 3. **Classify** — assign track, risk level, and tags in the spec front matter. This happens **once**, here, as part of the spec. Nothing downstream re-classifies.
 4. **Approve** — a human accepts the problem, outcome, scope, classification, and risk posture.
-5. **Design** *(ui tag only)* — produce `templates/design.md`: approved screens or wireframes and every required state. A human design/product owner approves it before planning begins. Skipped when the `ui` tag is absent.
+5. **Design** *(ui tag only)* — produce `templates/design.md`: flow, every required state, and — by default — a clickable static mockup built with mock data, distinct from and earlier than the Preview environment in step 12. A human design/product owner approves the design and mockup together before planning begins. Skipped when the `ui` tag is absent. See [standards/ui-and-preview.md](../standards/ui-and-preview.md).
 6. **Track** — create or update the issue with a link to the approved spec (and design, if produced).
 7. **Plan** — inspect the repository, identify files and dependencies, write an implementation plan.
 8. **Approve plan** — for Track B and C, a human approves the implementation plan before any code is written. Track A has no plan document and skips this step.
@@ -29,7 +29,7 @@ Classification (step 3) precedes planning deliberately: the plan cannot know whi
 |---|---|---|---|
 | `idea` | Problem statement exists | Draft spec | Requester / spec agent |
 | `specified` | Spec complete and classified | Human approval | Human product owner |
-| `designed` *(ui tag only)* | Spec approved, `ui` tag present | Human design approval | Human design/product owner |
+| `designed` *(ui tag only)* | Spec approved, `ui` tag present | Human approval of design **and mockup** together (or a stated reason the mockup was skipped) | Human design/product owner |
 | `planned` | Approved spec (and design, if `ui`) and repository inspection | Implementation plan | Planning agent |
 | `plan_approved` *(Track B/C)* | Implementation plan drafted | Human plan approval | Human product/tech owner |
 | `in_progress` | Branch and worktree exist off `develop` (or `main` for a hotfix) | Code + tests | Build agent |

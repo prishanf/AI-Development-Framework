@@ -2,7 +2,7 @@
 
 **AIDF** is a lightweight, AI-agnostic operating system for building software with coding agents. One shared workflow, vocabulary, document lifecycle, and set of safety boundaries — usable with Claude Code, Codex, Cursor, Gemini CLI, Aider, OpenHands, or whatever comes next.
 
-**Version:** 3.0.0 · **Status:** usable foundation with running gates
+**Version:** 3.1.0 · **Status:** usable foundation with running gates
 
 ## Process proportional to risk
 
@@ -47,7 +47,12 @@ flowchart LR
     track -->|B / C| spec[Spec + classify]
     spec --> approve{Human approves}
     approve -->|No| spec
-    approve -->|Yes| plan[Plan]
+    approve -->|Yes| uitag{ui tag?}
+    uitag -->|Yes| design[Design + throwaway mockup]
+    uitag -->|No| plan
+    design --> designapprove{Human approves both}
+    designapprove -->|No| design
+    designapprove -->|Yes| plan[Plan]
     plan --> planapprove{Human approves plan}
     planapprove -->|No| plan
     planapprove -->|Yes| build[Worktree off develop, build + tests]
@@ -77,7 +82,7 @@ flowchart LR
 |---|---|
 | `guide/` | Read first: overview, tracks, workflow, roles, documents, decisions, commands |
 | `standards/` | Configure once: gates, evidence, testing, AI safety, security, environments, database, API, MCP, observability |
-| `commands/` | Seven agent prompt contracts |
+| `commands/` | Eight agent prompt contracts |
 | `templates/` | Copy-ready documents, each tagged with the track that needs it |
 | `schemas/` | Machine-readable contracts for the manifest and evidence |
 | `reference/` | Working GitHub Actions + scripts. A reference, not the contract |
@@ -87,7 +92,7 @@ flowchart LR
 
 ## Compatibility contract
 
-An integration is AIDF-compatible when it can read the manifest, reach the seven command contracts, preserve the document lifecycle and classification, respect track selection, **distinguish claimed from corroborated evidence**, honor the stop conditions, treat observed content as data, and leave merge and release decisions to authorized humans or CI. Full checklist: [adapters/README.md](adapters/README.md).
+An integration is AIDF-compatible when it can read the manifest, reach the eight command contracts, preserve the document lifecycle and classification, respect track selection, **distinguish claimed from corroborated evidence**, honor the stop conditions, treat observed content as data, and leave merge and release decisions to authorized humans or CI. Full checklist: [adapters/README.md](adapters/README.md).
 
 ## Versioning
 

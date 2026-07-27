@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.1.0] — 2026-07-26
+
+Another gap caught in real use, in the gate v3.0.0 had just wired up: the Design gate required "approved screens or wireframes," which meant markdown was sufficient to approve a UI change. On a real feature — a yearly-view redesign into pivot tables with subtotal and type-total rows — that was not enough for anyone to actually judge layout, density, or usability, and the framework had nothing better to offer at that stage. The only clickable artifact it defined, Preview, is explicitly scoped to *after* build. An agent filled the gap itself, built an ad hoc static mockup, and correctly diagnosed why the framework hadn't asked for one — but nothing should require that diagnosis in the moment.
+
+### Added
+
+- **The design mockup, as a first-class part of the Design gate** — `templates/design.md` gains a `Mockup` section: a static HTML/CSS/JS artifact, built with mock data, required by default for any `ui`-tagged Track B/C change. Skipping it needs a stated, checkable reason, the same "none needed, because" pattern the PR template already uses — never a silent omission.
+- **`commands/design.md`** — the design gate previously had no agent contract of its own; it was a step named by `spec` with nobody responsible for actually producing the artifact a human approves. This closes that.
+- **An explicit distinction between the design mockup and Preview**, spelled out as a comparison table in `standards/ui-and-preview.md`: the mockup is throwaway, static, and gates the *plan*, before any code exists; Preview is the real, built implementation and gates the *merge*, after build. Conflating the two was the actual incident this release responds to.
+- **Design agent role** added to `guide/04-roles.md`; `design` added as a third operational extension (with `validate` and `preview`) in `guide/07-commands.md`.
+
+### Changed
+
+- `commands/spec.md` now tells the human, at spec-approval time, that a mockup is coming by default — so it isn't a surprise when the design gate is reached.
+- `commands/plan.md` treats an approved mockup as authoritative for layout; the plan references it rather than re-deciding UI structure.
+- `commands/build.md` verifies the mockup (or its stated exemption) as part of design approval, and warns explicitly against copying throwaway mockup markup into the real implementation — a mockup skips error handling, auth, and real data access on purpose, and that is fine for a decision aid and not fine for shipped code.
+- README's lifecycle diagram gained the Design step it was missing — `diagrams/lifecycle.md` already had it; the top-level summary diagram had drifted from canonical without a script catching a *missing* node, only a *contradicting* one.
+- Command count is eight everywhere it's stated (`README.md`, `.codex/AGENTS.md`, `adapters/README.md`'s conformance checklist).
+
+### Why this happened
+
+Found by using the framework on a real change and noticing the agent had to improvise where the gate should have had an answer. This is the same failure class as the two gaps closed in v3.0.0: a documented requirement ("approved screens or wireframes") that was real but too weak to force the outcome the framework actually wants, discovered only by running it for real. The fix follows the same shape as v3.0.0's: name the missing artifact precisely, give it a command contract, and make the thing it must not be confused with explicit rather than assumed.
+
 ## [3.0.0] — 2026-07-26
 
 A structural change to the branching model, plus two gate gaps closed after they were caught in real use: a change carrying the `ui` tag went from spec approval straight to implementation with no design sign-off, and an implementation plan had no approval gate at all — unlike a spec, nothing stopped a build agent from treating a drafted plan as an approved one.

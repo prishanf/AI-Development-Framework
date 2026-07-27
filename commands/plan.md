@@ -25,6 +25,12 @@ Do not re-classify the change — the track and tags were set at spec approval. 
 repository shows the classification is wrong, say so and send it back rather than
 quietly planning to a different risk level.
 
+If the change is tagged `ui`, treat the approved design and its mockup as authoritative
+for layout and flow — reference specific screens/states from it in the change map
+rather than re-deciding UI structure in the plan. If the plan reveals the mockup missed
+something material, say so and send it back to the design gate; do not quietly design
+around it here.
+
 Flag any mismatch between the approved spec and the repository.
 
 For Track B and Track C, the plan's `Approval` block is a hard gate, not a

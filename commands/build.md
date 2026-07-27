@@ -16,8 +16,11 @@ state. Confirm the track, the scope, and the branch/worktree context.
 For Track B and Track C, verify the implementation plan's `Approval.decision` is
 `approved` before writing any code. If it is `pending` or absent, stop and ask for
 plan approval — do not treat "the plan looks reasonable" as a substitute for the human
-decision. If the change is tagged `ui`, verify `templates/design.md` is likewise
-approved before implementation; do not build against an unapproved screen.
+decision. If the change is tagged `ui`, verify `templates/design.md` — including its
+mockup, unless the doc names a specific reason one wasn't needed — is approved before
+implementation; do not build against an unapproved screen. The mockup is throwaway: do
+not copy its markup into the real implementation, and do not skip real error handling,
+auth, or data access because the mockup faked them.
 
 Confirm the branch and worktree exist off the correct source: `develop` for a
 feature/fix, `main` for a hotfix, per standards/branching.md and standards/worktrees.md.

@@ -25,6 +25,7 @@ Users can save, list, rerun, rename, and delete private searches.
 
 ## Plan and links
 
+- Design: [04-design.md](04-design.md)
 - Plan: [03-implementation-plan.md](03-implementation-plan.md)
 - Branch: `feat/142-saved-searches`
 - PR: [05-pull-request.md](05-pull-request.md)

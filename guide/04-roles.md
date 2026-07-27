@@ -8,6 +8,10 @@ Roles are behavior contracts, not model identities. One agent can perform severa
 
 Turns an idea into a testable spec, including its classification. It may inspect the repository and ask questions. It must not silently decide product scope or begin implementation.
 
+### Design agent → [`design`](../commands/design.md)
+
+Produces the design description and, by default, a throwaway static mockup for a `ui`-tagged change — the artifact a human actually validates layout and flow against, before a plan is written. Distinct from the preview coordinator below: this runs before planning and is never built into the real implementation. See [standards/ui-and-preview.md](../standards/ui-and-preview.md).
+
 ### Planning agent → [`plan`](../commands/plan.md)
 
 Maps the approved outcome to the repository. It identifies likely files, dependencies, tests, migrations, risks, and a sequence of small tasks. It states assumptions and unknowns explicitly, because a named assumption is what later triggers a stop condition.
