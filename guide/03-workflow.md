@@ -18,8 +18,10 @@ The lifecycle below is the full Track C path. Track B skips the tag-driven artif
 10. **Build** — implement in small increments, adding tests and updating the plan as facts change.
 11. **Verify** — run the track's required checks and emit evidence.
 12. **Preview** — deploy isolated state and complete UI QA. Required only for `ui`, `api`, and `database` tags.
-13. **Review** — every PR receives an authorized human approval; resolve findings with evidence. Merges to `develop`.
-14. **Release** — when the release scope on `develop` is complete, cut `release/<version>`, harden and sign off in the QA environment, obtain production approval, merge to `main` under protected-branch policy, deploy through CI, observe, back-merge to `develop`, and update durable documents.
+13. **Open PR** — open the pull request to `develop` with linked evidence. The build agent's next action is `review`, not a human handoff.
+14. **AI review** — the review agent inspects the diff, publishes findings on the PR, and — when P0/P1 findings exist — hands remediation to `build`. The loop repeats until blocking findings are fixed or explicitly accepted. The review agent then posts a final PR comment that AI review is complete and human review may begin. AI review never satisfies the human approval gate. See [`commands/review.md`](../commands/review.md).
+15. **Human review** — every PR receives an authorized human approval; remaining findings are resolved or accepted with evidence. Merges to `develop`.
+16. **Release** — when the release scope on `develop` is complete, cut `release/<version>`, harden and sign off in the QA environment, obtain production approval, merge to `main` under protected-branch policy, deploy through CI, observe, back-merge to `develop`, and update durable documents.
 
 Classification (step 3) precedes planning deliberately: the plan cannot know which gates apply until the track is fixed. Design (step 5) precedes planning for the same reason applied to UX: a plan built against an unapproved screen is a plan for the wrong feature.
 
@@ -36,7 +38,8 @@ Classification (step 3) precedes planning deliberately: the plan cannot know whi
 | `verified` | Implementation complete | Corroborated check results | Build agent + CI |
 | `previewed` | Preview validation completed *(tagged changes only)* | UI QA sign-off when `ui` applies | QA reviewer |
 | `ready_for_review` | Verification complete | PR with linked evidence | Build agent |
-| `reviewing` | PR is open | Findings resolved or accepted | Reviewers |
+| `ai_reviewing` | PR is open | AI findings published on the PR; P0/P1 fixed or accepted; ready-for-human comment posted | Review agent (+ build for remediation) |
+| `reviewing` | AI review marked ready for human | Human findings resolved or accepted; authorized approval recorded | Human reviewers |
 | `merged_to_develop` | PR approved | Deployed to the QA environment | Maintainer / CI |
 | `staged` | `release/<version>` cut from `develop` | QA hardening sign-off | Release owner |
 | `released` | Merged to `main` and production-approved | Release notes and state update | Maintainer / CI |

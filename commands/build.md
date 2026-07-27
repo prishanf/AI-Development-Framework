@@ -44,6 +44,15 @@ Before finishing, run the configured verification commands via the project's gat
 runner. Report results as the runner returned them. Never state that a check passed
 unless a runner told you so — write evidence with runner=agent and let CI corroborate it.
 
+When the pull request is open (or you have just opened it), the change enters
+ai_reviewing — not human review. Set next action to `review`. Do not hand the PR
+to a human reviewer until the review agent has posted the ready-for-human comment.
+
+If next action arrived as remediation from `review`, fix only the cited P0/P1
+findings (and tests that prove them), re-verify, push, update evidence, and set
+next action back to `review` for a re-pass. Do not expand scope to clear a finding
+by deleting coverage or weakening assertions.
+
 Return: summary, files changed, checks and exact outcomes, deviations, risks, and next action.
 ```
 
@@ -56,3 +65,4 @@ Return: summary, files changed, checks and exact outcomes, deviations, risks, an
 - Checks are run, or the reason for omission is explicit.
 - No check result is asserted that a runner did not produce.
 - Changed files and remaining risks are listed.
+- After the PR exists, next action is `review` (or `review` again after remediation) — not human approval.

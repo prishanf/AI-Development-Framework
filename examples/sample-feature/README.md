@@ -6,7 +6,7 @@ A fictional feature moving through AIDF end to end. It assumes a web application
 
 ```text
 idea → spec (with classification) → design + mockup → plan → migration + seed
-     → preview UI QA → PR → review → release → deployment record
+     → preview UI QA → PR → AI review → human review → release → deployment record
 ```
 
 Note the two visual gates, and don't confuse them: [04-design.md](04-design.md) is a throwaway static mockup, approved **before** the plan below it is written. [14-ui-qa-signoff.md](14-ui-qa-signoff.md) is the real, built implementation, reviewed **after** [03-implementation-plan.md](03-implementation-plan.md) and [05-pull-request.md](05-pull-request.md). They look similar in purpose from a distance and are not the same gate — see [standards/ui-and-preview.md](../../standards/ui-and-preview.md).

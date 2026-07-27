@@ -1,5 +1,26 @@
 # Changelog
 
+## [4.0.0] — 2026-07-27
+
+Caught by running the framework on a real feature PR: after the build agent opened the pull request, nothing invoked `review`, nothing published findings on the host, and the handoff read as "human may begin" while the contracts still treated review as an optional, read-only side quest. The lifecycle diagram said "AI + human review"; the command contracts did not make AI review a required post-PR state.
+
+### Changed — breaking
+
+- **`ai_reviewing` is a first-class lifecycle state.** After the PR is open, the change moves to AI review — not straight to human approval. Canonical definition: [guide/03-workflow.md](guide/03-workflow.md). State table gains `ai_reviewing`; `reviewing` now means authorized **human** review after the ready-for-human comment.
+- **`commands/review.md` owns the post-PR loop:** publish findings on the open PR, hand P0/P1 remediation to `build`, re-review after fixes, then post a ready-for-human comment. AI review never satisfies `pull_request_approval`.
+- **`commands/build.md`:** when the PR exists, next action is `review`; remediation from review fixes only cited P0/P1 findings and returns to `review`.
+- **PR-time gates** gain "AI review complete" for every track ([standards/quality-gates.md](standards/quality-gates.md)) — a process gate evidenced on the host, not by `runner: ci`.
+- **`standards/ai-safety.md`:** posting review findings and the ready-for-human comment on **this change's own PR** is in scope for `review` / remediation `build` without a separate outbound-message confirmation.
+
+### Added
+
+- Host publication and ready-for-human fields on [templates/code-review.md](templates/code-review.md); decision vocabulary includes `ready-for-human`.
+- Explicit build → review → build remediation → ready-for-human edges in [diagrams/agent-orchestration.md](diagrams/agent-orchestration.md), [diagrams/lifecycle.md](diagrams/lifecycle.md), and the README summary diagram.
+
+### Why this happened
+
+Same class as the v3.x gate gaps: a diagram phrase ("AI + human review") without an enforceable handoff. Agents correctly stopped at `ready_for_review` because that is what the build contract asked for.
+
 ## [3.1.0] — 2026-07-26
 
 Another gap caught in real use, in the gate v3.0.0 had just wired up: the Design gate required "approved screens or wireframes," which meant markdown was sufficient to approve a UI change. On a real feature — a yearly-view redesign into pivot tables with subtotal and type-total rows — that was not enough for anyone to actually judge layout, density, or usability, and the framework had nothing better to offer at that stage. The only clickable artifact it defined, Preview, is explicitly scoped to *after* build. An agent filled the gap itself, built an ad hoc static mockup, and correctly diagnosed why the framework hadn't asked for one — but nothing should require that diagnosis in the moment.

@@ -30,7 +30,7 @@ Prepares an isolated, clickable review target with controlled data and gathers U
 
 ### Review agent → [`review`](../commands/review.md)
 
-Looks for defects, regressions, security issues, missing tests, and scope drift. It prioritizes actionable findings and cites file/line evidence. It does not rewrite the feature to make a finding disappear.
+Owns `ai_reviewing` after the PR is open. Looks for defects, regressions, security issues, missing tests, and scope drift; publishes prioritized findings on the PR; hands P0/P1 remediation back to `build`; and posts the ready-for-human comment only when blocking findings are fixed or accepted. It does not rewrite the feature to make a finding disappear while acting as review, and it never replaces human PR approval.
 
 ### Release agent → [`ship`](../commands/ship.md)
 

@@ -8,7 +8,7 @@ Documents are working parts of the system. They are created at different points 
 | Issue | What work is tracked, and where is its spec? | B, C | After approval | Status, links, ownership change |
 | Implementation plan | How will this repository change? | B, C | Before coding | Files, dependencies, or approach change |
 | Pull request | What exact change is proposed? | A, B, C | After implementation begins | Review, checks, and scope change |
-| Code review | What defects and risks exist? | B, C | On PR | Findings resolved or accepted |
+| Code review | What defects and risks did AI review find on the PR? | B, C (A: host only) | During `ai_reviewing` | Findings remediated or accepted; ready-for-human posted |
 | Release notes | What shipped and why? | B, C | For a release | Release scope or migration notes change |
 | Conventions | How does this codebase do things? | Project setup | First unfamiliar area | Patterns change or drift is found |
 | Architecture | What stable structure exists? | When a boundary changes | When a system boundary matters | The durable design changes |

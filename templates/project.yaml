@@ -4,7 +4,7 @@
 
 framework:
   name: ai-development-framework
-  version: 3.1.0
+  version: 4.0.0
   project_id: replace-with-project-id
 
 # GitFlow by default: main (production) + develop (QA, continuously deployed)

@@ -5,7 +5,8 @@ Derived from [standards/quality-gates.md](../standards/quality-gates.md), which 
 ```mermaid
 flowchart TD
     classify[Classify: track, risk, tags] --> baseline[Baseline: format, lint, typecheck, build, unit tests, secret scan]
-    baseline --> trackA{Track A?}
+    baseline --> aireview[AI review on open PR: publish findings, remediate P0/P1, ready-for-human comment]
+    aireview --> trackA{Track A?}
     trackA -->|Yes| approve[1 human PR approval]
     approve --> merge[Merge to develop]
     trackA -->|No| ui{ui tag?}
@@ -35,5 +36,7 @@ flowchart TD
 ```
 
 Preview appears inside the tag branches, not in the baseline. It is required for `ui`, `api`, and `database` changes and for all of Track C — not for every pull request.
+
+AI review runs on the open PR for every track before human approval begins; it is a process gate evidenced on the host, not a CI corroboration substitute — see [guide/03-workflow.md](../guide/03-workflow.md).
 
 Release-time gates are separated deliberately: they apply to a deployment, not to a pull request.

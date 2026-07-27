@@ -32,8 +32,11 @@ flowchart TD
     preview -->|No| pr[Open PR to develop]
     previewenv --> pr
 
-    pr --> review[AI + human review]
-    review --> merge[Merge to develop, deploy QA]
+    pr --> aireview[AI review: publish findings on PR]
+    aireview -->|P0/P1 findings| remediate[Build remediates + re-verify]
+    remediate --> aireview
+    aireview -->|ready for human| humanreview[Human review + approval]
+    humanreview --> merge[Merge to develop, deploy QA]
     merge --> relbranch[Release branch: QA hardening]
     relbranch --> relapprove{Production approval}
     relapprove --> release[Merge to main, deploy via CI]

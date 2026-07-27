@@ -46,3 +46,6 @@ Not covered by automation:
 
 <!-- Where should a reviewer spend their attention? If this PR is over the size
      budget, either split it or justify the size here. -->
+
+<!-- Human review begins after AI review posts the ready-for-human comment.
+     AI review does not replace required human approval. -->

@@ -11,9 +11,9 @@ A track is chosen once, when the change is classified, and it determines three t
 | **Risk level** | `low` | `standard` | `high` |
 | **When** | No behavior change: docs, comments, formatting, isolated non-functional edits | The default. Any user-visible or behavioral change | Any `database`, `security`, `mcp-write`, `release`, or `infra` tag |
 | **Spec** | Not required | Required and approved before planning | Required, plus explicit risk review |
-| **Documents** | PR only | Spec → plan → PR → review → release note (**5**) — plus a design and, by default, a mockup, if tagged `ui` | Track B plus the artifacts its tags demand |
+| **Documents** | PR only | Spec → plan → PR → AI review → human review → release note (**5**) — plus a design and, by default, a mockup, if tagged `ui` | Track B plus the artifacts its tags demand |
 | **Preview env** | No | Only if tagged `ui`, `api`, or `database` | Per tags; always for `database` |
-| **Gates** | Format, lint, typecheck, test, build + 1 human approval | Track A gates + PR approval against the spec | Track B gates + specialist review + production approval + rollback record |
+| **Gates** | Format, lint, typecheck, test, build + AI review + 1 human approval | Track A gates + PR approval against the spec | Track B gates + specialist review + production approval + rollback record |
 | **Merge** | Any authorized reviewer | Authorized reviewer | Authorized reviewer + named specialist |
 
 ## Choosing the track
@@ -36,7 +36,7 @@ Tags never *lower* a track. They add required evidence on top of it.
 
 Track A exists so that people do not route around the framework. A typo fix that would require a spec, a plan, a classification document, and a deployed preview environment does not get those things — it gets abandoned, and the next change after it skips the process too.
 
-Track A still requires: a pull request, passing automated checks, and one human approval. What it does not require is paperwork about a change whose entire content is visible in the diff.
+Track A still requires: a pull request, AI review with a ready-for-human comment, passing automated checks, and one human approval. What it does not require is paperwork about a change whose entire content is visible in the diff.
 
 **Spikes and throwaway work** run on Track A with one added rule: the branch is marked as an experiment, it is never merged to the integration branch, and anything worth keeping is re-implemented on Track B. An explicit escape hatch is safer than an implicit one.
 

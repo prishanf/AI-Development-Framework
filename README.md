@@ -2,7 +2,7 @@
 
 **AIDF** is a lightweight, AI-agnostic operating system for building software with coding agents. One shared workflow, vocabulary, document lifecycle, and set of safety boundaries — usable with Claude Code, Codex, Cursor, Gemini CLI, Aider, OpenHands, or whatever comes next.
 
-**Version:** 3.1.0 · **Status:** usable foundation with running gates
+**Version:** 4.0.0 · **Status:** usable foundation with running gates
 
 ## Process proportional to risk
 
@@ -11,9 +11,9 @@ Most frameworks fail because they cost the same for a typo as for a schema migra
 | | **Track A — Trivial** | **Track B — Standard** | **Track C — High risk** |
 |---|---|---|---|
 | **When** | No behavior change: docs, formatting, comments | The default: any behavior change | `database`, `security`, `mcp-write`, `infra`, `release` |
-| **Documents** | **The PR. That's it.** | Spec → plan → PR → review → release note | Track B + what the tags require |
+| **Documents** | **The PR. That's it.** | Spec → plan → PR → AI review → human review → release note | Track B + what the tags require |
 | **Preview env** | No | Only if `ui`, `api`, or `database` | Yes |
-| **Gates** | Lint, test, build + 1 approval | + PR approval against the spec | + specialist review + production approval |
+| **Gates** | Lint, test, build + AI review + 1 approval | + PR approval against the spec | + specialist review + production approval |
 
 A Track A change should ship in fifteen minutes with no preview infrastructure. If it doesn't, the framework is broken — not you. Full details: [guide/02-tracks.md](guide/02-tracks.md).
 
@@ -58,8 +58,11 @@ flowchart LR
     planapprove -->|Yes| build[Worktree off develop, build + tests]
     build --> verify[Verify: corroborated evidence]
     verify --> pr[Pull request to develop]
-    pr --> review[AI + human review]
-    review --> merge[Merge to develop, deploy QA]
+    pr --> aireview[AI review on PR]
+    aireview -->|findings| fix[Build remediates]
+    fix --> aireview
+    aireview -->|ready for human| humanreview[Human review]
+    humanreview --> merge[Merge to develop, deploy QA]
     merge --> release[Release branch -> main + documentation]
     build -.->|stop condition| halt[Stop, hand back]
 ```
