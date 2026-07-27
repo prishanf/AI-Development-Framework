@@ -1,20 +1,25 @@
 # Deployment flow
 
-Trunk-based by default: there is no staging branch. A project that configures `repository.qa_branch` inserts an optional QA step before the production gate.
+GitFlow by default: `develop` is continuously deployed to the QA environment; a `release/<version>` branch hardens that state before it earns production approval and merges to `main`. A project that opts out of `develop` (see [standards/branching.md](../standards/branching.md#opting-out-of-develop-trunk-based-mode)) collapses this to a single production gate after merge to `main`.
 
 ```mermaid
 flowchart LR
-    pr[Approved PR] --> checks[CI checks emit evidence]
-    checks --> merge[Merge to protected main]
-    merge --> qa{qa_branch configured?}
-    qa -->|Yes| qaenv[Optional QA validation]
-    qa -->|No| gate[Production approval]
-    qaenv --> gate
+    pr[Approved feature/fix PR] --> checks[CI checks emit evidence]
+    checks --> develop[Merge to protected develop]
+    develop --> qaenv[Continuous QA deployment]
+    qaenv --> cut{Release scope complete?}
+    cut -->|Yes| relbranch[Cut release/&lt;version&gt;]
+    cut -->|No| develop
+    relbranch --> relqa[QA hardening + sign-off on release branch]
+    relqa --> gate[Production approval]
     gate --> recovery[Capture recovery point]
-    recovery --> deploy[Deploy via CI]
+    recovery --> deploy[Merge release to main, deploy via CI]
     deploy --> smoke[Health + smoke verification]
     smoke -->|Pass| observe[Observation window]
     smoke -->|Fail| rollback[Roll back / forward fix]
-    observe --> record[Deployment record + durable docs]
-    rollback --> record
+    observe --> backmerge[Back-merge main into develop]
+    rollback --> record[Deployment record + durable docs]
+    backmerge --> record
 ```
+
+A `hotfix/<issue>-<slug>` branch skips `develop`/`release` entirely: it branches from `main`, goes through the same production-approval and recovery-point steps, deploys, and is back-merged into `develop` immediately after.

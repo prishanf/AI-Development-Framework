@@ -2,7 +2,7 @@
 
 **AIDF** is a lightweight, AI-agnostic operating system for building software with coding agents. One shared workflow, vocabulary, document lifecycle, and set of safety boundaries — usable with Claude Code, Codex, Cursor, Gemini CLI, Aider, OpenHands, or whatever comes next.
 
-**Version:** 2.0.0 · **Status:** usable foundation with running gates
+**Version:** 3.0.0 · **Status:** usable foundation with running gates
 
 ## Process proportional to risk
 
@@ -31,11 +31,12 @@ The agent's job is not to assert outcomes; it is to produce artifacts CI can cor
 ```bash
 cp templates/project.yaml project.yaml         # 1. fill in your commands and branches
 sh reference/scripts/validate-manifest.sh project.yaml
-cp -r reference/github/workflows/. .github/workflows/   # 2. gates that actually run
+git switch -c develop main && git push -u origin develop  # 2. create the QA integration branch
+cp -r reference/github/workflows/. .github/workflows/   # 3. gates that actually run
 cp reference/github/PULL_REQUEST_TEMPLATE.md .github/
 ```
 
-Then read [guide/01-overview.md](guide/01-overview.md) for the mental model and [guide/02-tracks.md](guide/02-tracks.md) for the day-to-day. Protect your integration branch and require Code Owner review — [reference/README.md](reference/README.md) explains why that step is the one that makes every gate real.
+Then read [guide/01-overview.md](guide/01-overview.md) for the mental model and [guide/02-tracks.md](guide/02-tracks.md) for the day-to-day. Protect `main` and `develop` and require Code Owner review — [reference/README.md](reference/README.md) explains why that step is the one that makes every gate real. Default branching is GitFlow (`main` + `develop` + feature/release/hotfix branches, see [standards/branching.md](standards/branching.md)); a project with no need for a persistent QA environment can opt out to trunk-based instead.
 
 ## The lifecycle
 
@@ -47,12 +48,14 @@ flowchart LR
     spec --> approve{Human approves}
     approve -->|No| spec
     approve -->|Yes| plan[Plan]
-    plan --> build[Build + tests]
+    plan --> planapprove{Human approves plan}
+    planapprove -->|No| plan
+    planapprove -->|Yes| build[Worktree off develop, build + tests]
     build --> verify[Verify: corroborated evidence]
-    verify --> pr[Pull request]
+    verify --> pr[Pull request to develop]
     pr --> review[AI + human review]
-    review --> merge[Merge]
-    merge --> release[Release + documentation]
+    review --> merge[Merge to develop, deploy QA]
+    merge --> release[Release branch -> main + documentation]
     build -.->|stop condition| halt[Stop, hand back]
 ```
 

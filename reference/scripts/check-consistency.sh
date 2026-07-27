@@ -66,14 +66,17 @@ for rel in ("diagrams/lifecycle.md", "diagrams/quality-gates.md"):
     if "canonical" not in read(rel).lower():
         problems.append("%s: must state which file it is derived from" % rel)
 
-# A staging branch is not part of the default model.
+# GitFlow (main + develop + release/hotfix branches) is the default model as
+# of v3.0.0 -- see standards/branching.md. A project may still opt out to
+# trunk-based, but nothing in this repository should claim trunk-based is
+# the only supported shape, or that a release/staging branch is disallowed.
 for rel in walk():
     body = read(rel)
     if rel in (canonical, "standards/branching.md", "diagrams/deployment.md",
                "CHANGELOG.md", "reference/scripts/check-consistency.sh"):
         continue
-    if re.search(r"\bstaging branch\b|Deploy staging|Staging QA", body):
-        problems.append("%s: references a staging branch, which is not in the default model" % rel)
+    if re.search(r"no staging branch|staging branch.*not (?:in|part of) the default model", body):
+        problems.append("%s: describes trunk-based as the only default model, which is stale since v3.0.0" % rel)
 
 # -------------------------------------------------------- tag taxonomy
 gates_doc = read("standards/quality-gates.md")

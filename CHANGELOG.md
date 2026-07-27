@@ -1,5 +1,27 @@
 # Changelog
 
+## [3.0.0] — 2026-07-26
+
+A structural change to the branching model, plus two gate gaps closed after they were caught in real use: a change carrying the `ui` tag went from spec approval straight to implementation with no design sign-off, and an implementation plan had no approval gate at all — unlike a spec, nothing stopped a build agent from treating a drafted plan as an approved one.
+
+### Changed — breaking
+
+- **GitFlow is now the default branching model**, reversing the v2.0.0 decision to make trunk-based the default. `main` (production) and `develop` (continuously-deployed QA integration branch) are both long-lived and protected; `feat/*`/`fix/*` branch from and merge to `develop`; `release/<version>` branches from `develop`, hardens in the QA environment, and merges to `main` under production approval; `hotfix/*` branches from `main`. Rationale: a per-PR Preview environment answers "does this one change work?" but does not answer "is the accumulated, approved state of `develop` ready to release?" — teams that need to run QA against a stable, continuously-updated target before cutting a release need a real branch for that, not just an ephemeral one per PR. See [standards/branching.md](standards/branching.md).
+  - Trunk-based is still fully supported as an explicit opt-out (`repository.qa_branch: ""`, `integration_branch: main`) for projects with no persistent QA target — see [standards/branching.md#opting-out-of-develop-trunk-based-mode](standards/branching.md#opting-out-of-develop-trunk-based-mode). The framework's own manifest (`project.yaml`) uses this opt-out, since this repository has no deployable application for `develop` to serve.
+  - `schemas/project.schema.json` gains `repository.release_branch_pattern` and `repository.hotfix_branch_pattern`, and `gates.plan_approval_required`.
+  - `standards/worktrees.md` now describes a bare-repo layout with persistent worktrees for `main`/`develop` and documents that Track C work **requires** a worktree, not just "recommends" one.
+  - `guide/03-workflow.md`'s state table gains `designed`, `plan_approved`, `merged_to_develop`, and `staged` states; the old "there is no staging branch" line is gone along with the anti-staging-branch guard in `reference/scripts/check-consistency.sh`.
+  - `diagrams/deployment.md`, `diagrams/lifecycle.md`, `diagrams/environment-promotion.md`, `diagrams/quality-gates.md`, `diagrams/worktree-flow.md`, and `diagrams/document-flow.md` all updated to match.
+
+### Added
+
+- **Plan approval gate** — `templates/implementation-plan.md` gains an `Approval` block identical in spirit to the spec's: for Track B/C, `commands/build.md` now explicitly verifies `Approval.decision == approved` before writing any code, and stops to ask if it is not. `project.yaml`'s `gates` block gains `plan_approval_required`.
+- **Design gate wired from spec, not just documented** — `commands/spec.md` now tells the spec agent to name the design gate as the explicit next step whenever the `ui` tag applies, instead of leaving `standards/ui-and-preview.md`'s existing requirement undiscoverable from the spec workflow. `templates/design.md` gains the same `Approval` block pattern as the plan and spec templates.
+
+### Why this happened
+
+All three gaps were found the same way: by running the framework on a real project and comparing what actually happened against what the documents said should happen. The design and plan gates were previously real requirements with no enforcement path — a human had to already know to ask for them. The branching change is a genuine reversal of a considered v2.0.0 decision, made because a real project's requirement (a persistent, testable QA environment ahead of production, not just per-PR previews) outweighed the stated cost of a second integration branch for that project's shape of work.
+
 ## [2.0.0] — 2026-07-26
 
 A structural release. v1 described quality gates without implementing any, made evidence unverifiable, and was too heavy to adopt for small changes. This release addresses all three.

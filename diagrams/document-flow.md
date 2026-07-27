@@ -2,8 +2,11 @@
 
 ```mermaid
 flowchart LR
-    spec[Feature spec] --> issue[Issue]
-    spec --> plan[Implementation plan]
+    spec[Feature spec] --> uitag{ui tag?}
+    uitag -->|Yes| design[Design doc: approved]
+    uitag -->|No| issue[Issue]
+    design --> issue
+    spec --> plan[Implementation plan: approved]
     issue --> pr[Pull request]
     plan --> pr
     pr --> state[Project state]

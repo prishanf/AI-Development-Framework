@@ -25,6 +25,8 @@
         "integration_branch": { "type": "string", "minLength": 1 },
         "production_branch": { "type": "string", "minLength": 1 },
         "feature_branch_pattern": { "type": "string", "minLength": 1 },
+        "release_branch_pattern": { "type": "string" },
+        "hotfix_branch_pattern": { "type": "string" },
         "worktree_policy": { "type": "string" },
         "qa_branch": { "type": "string" }
       }
@@ -56,6 +58,7 @@
       "type": "object",
       "required": [
         "spec_approval_required",
+        "plan_approval_required",
         "pull_request_approval_required",
         "specialist_review_required",
         "production_approval_required"
@@ -63,6 +66,7 @@
       "additionalProperties": false,
       "properties": {
         "spec_approval_required": { "type": "boolean" },
+        "plan_approval_required": { "type": "boolean" },
         "pull_request_approval_required": { "type": "boolean" },
         "specialist_review_required": { "type": "boolean" },
         "production_approval_required": { "type": "boolean" }

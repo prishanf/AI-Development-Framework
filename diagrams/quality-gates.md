@@ -7,7 +7,7 @@ flowchart TD
     classify[Classify: track, risk, tags] --> baseline[Baseline: format, lint, typecheck, build, unit tests, secret scan]
     baseline --> trackA{Track A?}
     trackA -->|Yes| approve[1 human PR approval]
-    approve --> merge[Merge]
+    approve --> merge[Merge to develop]
     trackA -->|No| ui{ui tag?}
 
     ui -->|Yes| uiqa[Approved design + Preview + UI QA sign-off]
@@ -31,7 +31,7 @@ flowchart TD
     threat --> approve2
     approve2 --> merge
 
-    merge --> reltime[Release-time gates: production approval, recovery point, post-release verification, observation window, deployment record]
+    merge --> reltime[release/&lt;version&gt; -> main: production approval, recovery point, post-release verification, observation window, deployment record]
 ```
 
 Preview appears inside the tag branches, not in the baseline. It is required for `ui`, `api`, and `database` changes and for all of Track C — not for every pull request.

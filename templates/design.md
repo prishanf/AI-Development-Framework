@@ -42,3 +42,14 @@ flowchart TD
 ## Acceptance notes
 
 - [ ] <observable interaction>
+
+## Approval
+
+- Decision: `pending | approved | rejected`
+- Approver: <name or role, human design/product owner>
+- Date: YYYY-MM-DD
+- Notes: <trade-offs or conditions>
+
+## Agent instruction
+
+Do not write an implementation plan against this design until `Approval.decision` is `approved`. If review feedback changes the flow, states, or scope, update this document and return it for re-approval before planning.

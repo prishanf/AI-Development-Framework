@@ -8,8 +8,8 @@ Environments are capability contracts, not product names. A project may implemen
 |---|---|---|---|---|
 | Local | Developer iteration | Local runtime | Synthetic or developer-owned | Short-lived |
 | Preview | One pull request’s complete behavior | Isolated deployment | Approved clone plus synthetic fixtures | Until PR closes |
-| QA | Deliberate cross-feature or release validation | Stable, reviewable deployment | Controlled non-production dataset | Resettable |
-| Production | Real user traffic | Protected deployment | Real data | Persistent |
+| QA | Cross-feature validation of everything merged to `develop`, and release-candidate hardening on `release/<version>` | Continuously deployed from `repository.qa_branch` | Controlled non-production dataset | Resettable, long-lived |
+| Production | Real user traffic | Protected deployment from `main` | Real data | Persistent |
 
 ## When Preview is required
 
@@ -19,7 +19,11 @@ This is a deliberate limit on cost. Requiring an ephemeral deployed environment 
 
 Where Preview is not required, the reviewer still needs a way to exercise the change: a build artifact, a local run, or a test that demonstrates the behavior. "Not previewable" is not the same as "not verified".
 
-QA remains optional as a shared environment. It is useful when several approved PRs must be tested together, and it is **disabled by default** in the manifest.
+## QA and `develop`
+
+Under the framework's default [GitFlow branching model](branching.md), QA is not optional: `repository.qa_branch` (`develop` by default) is continuously deployed to the QA environment as feature/fix PRs merge, so there is always a stable, reviewable target for cross-feature validation. When a release is cut, `release/<version>` deploys to the same QA environment for hardening and sign-off before it earns production approval.
+
+A project that opts out of `develop` (trunk-based mode, see [branching.md](branching.md#opting-out-of-develop-trunk-based-mode)) has no standing QA environment by default; Preview then carries the review weight QA carries under GitFlow, and `repository.qa_branch` is left empty.
 
 ## Environment contract
 
