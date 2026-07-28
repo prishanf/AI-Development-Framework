@@ -13,7 +13,14 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-MANIFEST="$ROOT/project.yaml"
+# Prefer the manifest in the working directory. When the framework is vendored
+# under .aidf/, ROOT is that vendored directory -- which holds no project.yaml.
+# The project's manifest lives at the repository root, where the runner starts.
+if [ -f "./project.yaml" ]; then
+  MANIFEST="$(CDPATH= cd -- . && pwd)/project.yaml"
+else
+  MANIFEST="$ROOT/project.yaml"
+fi
 TRACK=""
 TAGS=""
 OUT="evidence.json"
@@ -92,6 +99,45 @@ for name in baseline:
                   "status": "pass" if rc == 0 else "fail",
                   "source": "ci" if runner == "ci" else "human"})
     print("%s  %-10s (%dms)" % ("PASS " if rc == 0 else "FAIL ", name, duration))
+    if rc != 0:
+        failed = True
+
+# The `api` tag's endpoint-coverage gate. Not a manifest command: it is a
+# framework check, so it runs from reference/scripts rather than from a project
+# command that could be quietly left empty.
+if "api" in tags:
+    script = os.path.join(os.environ["LIB"], "..", "check-api-coverage.sh")
+    cmd = "sh %s --manifest %s" % (
+        json.dumps(os.path.normpath(script)), json.dumps(os.environ["MANIFEST"]))
+    started = time.time()
+    print("RUN   %-10s %s" % ("api-tests", cmd), flush=True)
+    rc = subprocess.call(cmd, shell=True)
+    duration = int((time.time() - started) * 1000)
+    checks.append({"name": "api-tests", "command": cmd,
+                   "exit_code": rc, "duration_ms": duration})
+    gates.append({"name": "api-tests",
+                  "status": "pass" if rc == 0 else "fail",
+                  "source": "ci" if runner == "ci" else "human"})
+    print("%s  %-10s (%dms)" % ("PASS " if rc == 0 else "FAIL ", "api-tests", duration))
+    if rc != 0:
+        failed = True
+
+# Track B/C: a changelog entry is required, same as any other gate -- not a
+# manifest command, since a project could leave it configured empty.
+if track in ("B", "C"):
+    script = os.path.join(os.environ["LIB"], "..", "check-changelog.sh")
+    cmd = "sh %s --track %s --manifest %s" % (
+        json.dumps(os.path.normpath(script)), track, json.dumps(os.environ["MANIFEST"]))
+    started = time.time()
+    print("RUN   %-10s %s" % ("changelog", cmd), flush=True)
+    rc = subprocess.call(cmd, shell=True)
+    duration = int((time.time() - started) * 1000)
+    checks.append({"name": "changelog", "command": cmd,
+                   "exit_code": rc, "duration_ms": duration})
+    gates.append({"name": "changelog",
+                  "status": "pass" if rc == 0 else "fail",
+                  "source": "ci" if runner == "ci" else "human"})
+    print("%s  %-10s (%dms)" % ("PASS " if rc == 0 else "FAIL ", "changelog", duration))
     if rc != 0:
         failed = True
 

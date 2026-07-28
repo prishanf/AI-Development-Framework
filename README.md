@@ -2,7 +2,7 @@
 
 **AIDF** is a lightweight, AI-agnostic operating system for building software with coding agents. One shared workflow, vocabulary, document lifecycle, and set of safety boundaries — usable with Claude Code, Codex, Cursor, Gemini CLI, Aider, OpenHands, or whatever comes next.
 
-**Version:** 4.0.0 · **Status:** usable foundation with running gates
+**Version:** 5.0.0 · **Status:** usable foundation with running gates
 
 ## Process proportional to risk
 
@@ -28,15 +28,33 @@ The agent's job is not to assert outcomes; it is to produce artifacts CI can cor
 
 ## Start here
 
+Clone this repository, then install the framework **into** your project:
+
 ```bash
-cp templates/project.yaml project.yaml         # 1. fill in your commands and branches
-sh reference/scripts/validate-manifest.sh project.yaml
-git switch -c develop main && git push -u origin develop  # 2. create the QA integration branch
-cp -r reference/github/workflows/. .github/workflows/   # 3. gates that actually run
-cp reference/github/PULL_REQUEST_TEMPLATE.md .github/
+sh reference/scripts/aidf-install.sh --target /path/to/your/project
 ```
 
-Then read [guide/01-overview.md](guide/01-overview.md) for the mental model and [guide/02-tracks.md](guide/02-tracks.md) for the day-to-day. Protect `main` and `develop` and require Code Owner review — [reference/README.md](reference/README.md) explains why that step is the one that makes every gate real. Default branching is GitFlow (`main` + `develop` + feature/release/hotfix branches, see [standards/branching.md](standards/branching.md)); a project with no need for a persistent QA environment can opt out to trunk-based instead.
+That vendors the framework into one directory and wires up the rest:
+
+```text
+your-project/
+  .aidf/                  ← the framework: contracts, standards, templates, gates
+  app/  server/  tests/   ← your code
+  docs/                   ← what the framework produces: specs, plans, designs, records
+  AGENTS.md  project.yaml  .github/
+```
+
+**One framework directory, not seven.** The mental model is `.aidf/` is input, `docs/` is output, everything else is yours. Upgrade later with `--upgrade`, which refreshes the vendored tree and touches nothing your project owns.
+
+Then:
+
+```bash
+cd /path/to/your/project
+sh .aidf/reference/scripts/validate-manifest.sh project.yaml   # 1. fill in commands, branches, ui/api blocks
+git switch -c develop main && git push -u origin develop        # 2. create the QA integration branch
+```
+
+Read [guide/01-overview.md](guide/01-overview.md) for the mental model and [guide/02-tracks.md](guide/02-tracks.md) for the day-to-day. Protect `main` and `develop` and require Code Owner review — [reference/README.md](reference/README.md) explains why that step is the one that makes every gate real. Default branching is GitFlow (`main` + `develop` + feature/release/hotfix branches, see [standards/branching.md](standards/branching.md)); a project with no need for a persistent QA environment can opt out to trunk-based instead.
 
 ## The lifecycle
 
@@ -81,17 +99,19 @@ flowchart LR
 
 ## Repository map
 
-| Path | Purpose |
-|---|---|
-| `guide/` | Read first: overview, tracks, workflow, roles, documents, decisions, commands |
-| `standards/` | Configure once: gates, evidence, testing, AI safety, security, environments, database, API, MCP, observability |
-| `commands/` | Eight agent prompt contracts |
-| `templates/` | Copy-ready documents, each tagged with the track that needs it |
-| `schemas/` | Machine-readable contracts for the manifest and evidence |
-| `reference/` | Working GitHub Actions + scripts. A reference, not the contract |
-| `diagrams/` | Focused Mermaid views, derived from the canonical workflow |
-| `examples/` | A feature through release, and one that goes wrong |
-| `adapters/` | How to wire the contracts onto your agent surface |
+| Path | Purpose | Vendored into a project? |
+|---|---|---|
+| `guide/` | Read first: overview, tracks, workflow, roles, documents, decisions, commands | yes |
+| `standards/` | Configure once: gates, evidence, testing, UI, database, API, security, MCP, observability | yes |
+| `commands/` | Eight agent prompt contracts | yes |
+| `templates/` | Copy-ready documents, each tagged with the track that needs it | yes |
+| `schemas/` | Machine-readable contracts for the manifest and evidence | yes |
+| `reference/` | Working GitHub Actions, gate scripts, and the mockup scaffold. A reference, not the contract | yes |
+| `adapters/` | How to wire the contracts onto your agent surface | yes |
+| `diagrams/` | Focused Mermaid views, derived from the canonical workflow | no |
+| `examples/` | A feature through release, and one that goes wrong | no |
+
+The vendored set is closed under linking: nothing inside it links out to anything excluded, so every relative link still resolves after installation. `check-consistency.sh` enforces that.
 
 ## Compatibility contract
 

@@ -12,7 +12,9 @@ Documents are working parts of the system. They are created at different points 
 | Release notes | What shipped and why? | B, C | For a release | Release scope or migration notes change |
 | Conventions | How does this codebase do things? | Project setup | First unfamiliar area | Patterns change or drift is found |
 | Architecture | What stable structure exists? | When a boundary changes | When a system boundary matters | The durable design changes |
+| Data model | What does persistent state look like, and what may touch it? | `database` | Before the migration is written | Schema, classification, retention, or access rules change |
 | Design | What should users experience? | `ui` | For UX or interaction work | User-facing behavior changes |
+| UI foundation | What are the brand, tokens, and component conventions? | `ui` (first one) | With the first `ui` change | Tokens, breakpoints, or component conventions change |
 | ADR | Why was a consequential choice made? | When consequential | At the decision point | Decision is superseded |
 | Project state | What is true right now? | Project setup | At project setup | Milestones, risks, blockers change |
 | Wiki page | What should a future reader know? | When reusable | When knowledge is reusable | Operational knowledge changes |

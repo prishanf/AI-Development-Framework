@@ -14,7 +14,15 @@ set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 EVIDENCE=${1:-evidence.json}
-MANIFEST=${2:-$ROOT/project.yaml}
+# Same reasoning as run-gates.sh: when vendored under .aidf/, ROOT is not the
+# project root, and the manifest is where the runner started.
+if [ -n "${2:-}" ]; then
+  MANIFEST=$2
+elif [ -f "./project.yaml" ]; then
+  MANIFEST="./project.yaml"
+else
+  MANIFEST="$ROOT/project.yaml"
+fi
 
 command -v python3 >/dev/null 2>&1 || { echo "aidf: python3 is required" >&2; exit 2; }
 [ -f "$EVIDENCE" ] || { echo "aidf: evidence file not found: $EVIDENCE" >&2; exit 2; }

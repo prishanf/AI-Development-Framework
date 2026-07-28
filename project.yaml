@@ -6,8 +6,11 @@
 
 framework:
   name: ai-development-framework
-  version: 4.0.0
+  version: 5.0.0
   project_id: aidf
+  # This IS the framework repository, so nothing is vendored here. A consuming
+  # project sets this to `.aidf` -- see reference/scripts/aidf-install.sh.
+  root: ""
 
 # This project deliberately opts out of the default GitFlow model (see
 # standards/branching.md#opting-out-of-develop-trunk-based-mode): it is a
@@ -37,6 +40,7 @@ documents:
   decisions: standards
   wiki: guide
   releases: CHANGELOG.md
+  changelog: CHANGELOG.md
   state: templates/project-state.md
   conventions: CONTRIBUTING.md
 

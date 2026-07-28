@@ -1,5 +1,63 @@
 # Changelog
 
+## [5.0.0] — 2026-07-27
+
+Five gaps found by shipping a real feature with v4.0.0 — a personal income/expense tracker built end to end — and then reading what the framework had actually produced. Four of the five are visible as concrete artifacts in that repository, which is the point: each was a rule the framework stated loosely enough to be satisfied without being met.
+
+### Changed — breaking
+
+- **The framework installs as one vendored directory.** `reference/scripts/aidf-install.sh` copies the runtime subset into a project's `.aidf/` and wires up `AGENTS.md`, `project.yaml`, `.github/`, the adapter files, and the `docs/` tree. Previously, adopting AIDF meant cloning it, which left `commands/`, `guide/`, `reference/`, `schemas/`, `standards/`, `templates/`, and `adapters/` in the project root next to `app/`, `server/`, and `docs/` — seven framework directories interleaved with the project's own, with nothing marking which was which. The mental model is now explicit: **`.aidf/` is framework input, `docs/` is project output.**
+  - `framework.root` added to the manifest and schema (`.aidf` by default; empty in this repository).
+  - `--upgrade` refreshes the vendored tree and touches nothing project-owned. Project-owned files are never silently overwritten without `--force`.
+  - `guide/`, `standards/`, `commands/`, `templates/`, `schemas/`, `reference/`, and `adapters/` are vendored. `diagrams/`, `examples/`, and the changelog are not — a project does not need them. `check-consistency.sh` now enforces that the vendored set is **closed under linking**, so a link from a vendored file to an excluded one fails the build here rather than breaking silently in every installed project.
+  - `run-gates.sh` and `validate-evidence.sh` now prefer the manifest in the working directory. Under `.aidf/`, the script's own root is not the project root.
+- **`api`: an endpoint with no HTTP-level test is a failing gate.** The tag required "contract and authorization tests", and that phrasing turned out to be satisfiable without touching an endpoint. In the real project it was: fourteen routes added, three unit tests written against the pure helper functions those routes call, every gate green, and not one HTTP request in the suite. [standards/testing.md](standards/testing.md) now states the rule mechanically — *a unit test of a handler's helpers is not endpoint coverage* — with a required-case matrix per endpoint (2xx with asserted body, validation per field, 401, 403 per object, 404, cross-tenant, conflict, unknown fields, pagination bounds, write replay, error shape).
+  - `reference/scripts/check-api-coverage.sh` enforces it: enumerates routes from `api.route_globs`, fails when one has no test referencing it, and fails again when the only matching test makes no HTTP request. Wired into `run-gates.sh` for the `api` tag. It fails closed when unconfigured.
+  - [templates/api-contract.md](templates/api-contract.md)'s four unchecked boxes are replaced by an endpoint inventory and a per-endpoint test matrix, with explicit places to record `n/a` reasons and honest automation gaps.
+- **`database`: a data model document is required.** `templates/architecture.md` declared itself required when "a stable boundary, data model, or deployment topology changes" and then contained no data model section at all — only prose "Data flow". The real project's agent improvised an ERD anyway, which is luck, not a contract.
+- **Track B/C requires a project changelog entry.** The framework keeps its own [CHANGELOG.md](CHANGELOG.md) so a reader can see what changed without diffing every file; an installed project had no equivalent, and nothing recorded what a release did beyond git log — which is commit-message discipline, not a reviewable record. `reference/scripts/check-changelog.sh` fails Track B/C when source changed but the project's `CHANGELOG.md` didn't; Track A is exempt, so trivial changes aren't forced into meaningless entries. It fails closed on paths that matter and exempts the vendored framework, `.github/`, lockfiles, and `.gitkeep` files. Wired into `run-gates.sh`.
+  - `reference/scripts/aidf-install.sh` now scaffolds a project `CHANGELOG.md` (Keep a Changelog style, `[Unreleased]` seeded) on fresh install.
+  - `documents.changelog` added to the manifest (`CHANGELOG.md` by default).
+
+### Added
+
+- **[templates/data-model.md](templates/data-model.md)** — conceptual model, crow's-foot ERD, per-table data dictionary (type, nullability, default, constraint, **data class**, meaning), indexes with the query each serves, referential actions, enumerations, derived values, identity and multi-tenancy, authorization mapping, integrity invariants, volume and growth, classification/retention/erasure, and migration mapping. An unclassified column defaults to `sensitive` — deliberately the inconvenient default.
+- **[templates/ui-foundation.md](templates/ui-foundation.md)** — the first `ui`-tagged change decides the product's palette, typeface, spacing rhythm, component vocabulary, and responsive behaviour for every feature after it, whether or not anyone intends it to. This makes that a decision instead of an accident: brand basics, semantic colour roles with **measured** contrast ratios, type scale with a font-loading strategy, spacing/radius/elevation/motion/z-index scales, named breakpoints, the component inventory (including the empty, loading, and error states agents skip), the accessibility baseline, and date/currency/number conventions. Durable and shared — extended by later `ui` changes, never re-derived.
+- **Tailwind as the declared default CSS framework**, via `ui.css_framework`. The mechanism that matters more than the choice is the **token layer** (`ui.tokens`): design values live once as CSS custom properties, Tailwind is wired to them, and *the application and the design mockup read the same file*. In the real project the app ended up with hand-rolled CSS variables **and** a `tailwind.config.ts` while the mockup used neither — three visual languages for one feature.
+- **[reference/mockup/](reference/mockup/)** — a working, copy-ready mockup scaffold, and a required structure in [standards/ui-and-preview.md](standards/ui-and-preview.md): one file per screen, shared `css/` and `data/`, fixtures in JSON at realistic volume, a visible fixture reset, and `serve.sh`. A mockup must **run over HTTP**: fetching local fixtures fails under `file://`, and the reviewer reports the prototype as broken. `commands.mockup_serve` added to the manifest so the handoff names a command instead of a paragraph.
+  - The scaffold ships two screens, all five states, 32 fixture rows, a dark theme, and the Tailwind wiring notes — including three `@tailwindcss/browser` behaviours that each fail silently and cost real debugging time to find.
+- `ui` and expanded `api` blocks in the manifest and schema; `documents.data_model`; `database.data_model_required`.
+- New rows in the PR-time gate table for endpoint coverage, data model currency, and UI foundation approval; new document rows in [guide/05-documents.md](guide/05-documents.md).
+
+### Changed
+
+- `commands/design.md` detects whether this is the project's first `ui` change and produces the UI foundation alongside the design; it also follows the mockup structure contract rather than inventing one.
+- `commands/plan.md` and [templates/implementation-plan.md](templates/implementation-plan.md) gain **UI foundation** and **API surface** sections, and a "Data and migration" section that must be answered field by field rather than in a sentence. The plan must now name, per endpoint, the test file that will exercise it — if it cannot, the plan is not ready.
+- `commands/build.md` requires the token layer to land before the first component, forbids raw colour/size/spacing values outside it, requires denied-path endpoint tests, and requires a changelog entry under `[Unreleased]` for Track B/C.
+- [standards/quality-gates.md](standards/quality-gates.md)'s PR-time table gains a "Changelog entry under `[Unreleased]`" row: optional for Track A, required for B/C.
+- `adapters/README.md`: the installer now generates the Claude Code, Codex, and Cursor wiring. The framework repository still ships no vendor command surface; an installed project gets a working one.
+
+### Why this happened
+
+Same failure class as v3.1.0 and v4.0.0, and worth naming a third time: each of these was a requirement that existed in prose and was too weak to force the outcome. "Contract and authorization tests" did not say *through the router*. "Required when the data model changes" did not say *what a data model document contains*. "Use the project's design tokens where the project has them" did not say *who creates them, or when*. "A static HTML/CSS/JS artifact" did not say *runnable, or shared, or with what data*.
+
+The pattern in the fix is also the same: name the artifact precisely, give it a template, and make it mechanically checkable where a script can do it. `check-api-coverage.sh` cannot judge whether a test asserts anything — but the failure that actually happened was an *absent* test, and that a script can catch.
+
+### Migrating from 4.x
+
+```bash
+# from a clone of the framework, in your project's directory
+sh /path/to/ai-development-framework/reference/scripts/aidf-install.sh --target . --upgrade
+```
+
+Then, in your project:
+
+1. Move the old top-level framework directories out of your project root — `commands/`, `guide/`, `reference/`, `schemas/`, `standards/`, `templates/`, `adapters/` are now under `.aidf/`. Update any path that referenced them, including `.github/workflows/` and `.claude/commands/`.
+2. Add `framework.root: .aidf` to `project.yaml`, and set `framework.version: 5.0.0`.
+3. Add the `ui` block and point `ui.tokens` at your token layer. If you do not have one, that is the finding: create it, and write `docs/design/ui-foundation.md` before the next `ui` change.
+4. Add `api.route_globs` and `api.test_globs`. Then run `check-api-coverage.sh` and expect it to fail — that result is the honest state of your endpoint coverage, not a script problem.
+5. For any persistent state you already have, write `templates/data-model.md` once, from the schema you have, and classify every column.
+
 ## [4.0.0] — 2026-07-27
 
 Caught by running the framework on a real feature PR: after the build agent opened the pull request, nothing invoked `review`, nothing published findings on the host, and the handoff read as "human may begin" while the contracts still treated review as an optional, read-only side quest. The lifecycle diagram said "AI + human review"; the command contracts did not make AI review a required post-PR state.

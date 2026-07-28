@@ -8,9 +8,9 @@ Quality gates are selected by change risk, not by a provider or a fixed pipeline
 
 | Tag | Applies to | Additional required evidence | Forces |
 |---|---|---|---|
-| `ui` | Screens, interaction, content flow | Approved design and Preview UI QA sign-off | Preview |
-| `api` | Endpoint, schema, or contract change | Contract and authorization tests | Preview |
-| `database` | Migration, persistence, or query shape | Migration plan (incl. seed profile), schema review | Track C, Preview |
+| `ui` | Screens, interaction, content flow | Approved design and mockup, UI foundation on the first `ui` change, Preview UI QA sign-off | Preview |
+| `api` | Endpoint, schema, or contract change | API contract with a per-endpoint test matrix; HTTP-level endpoint tests incl. denied paths | Preview |
+| `database` | Migration, persistence, or query shape | Data model (ERD + data dictionary), migration plan (incl. seed profile), schema review | Track C, Preview |
 | `security` | Auth, permissions, secrets, crypto | Threat model and named security review | Track C |
 | `mcp-write` | Agent-initiated mutation | Capability review, audit plan, threat model | Track C |
 | `infra` | IaC, runtime config, networking, CI permissions | Change plan, blast-radius statement, rollback | Track C |
@@ -36,8 +36,12 @@ These run before merge. This table governs pull requests only.
 | Human PR approval | Required (1) | Required (1) | Required (1) + named specialist |
 | Preview deploy and smoke test | — | Required if `ui`/`api`/`database` | Required |
 | UI QA sign-off | — | Required if `ui` | Required if `ui` |
-| Contract / authorization tests | — | Required if `api` | Required |
+| Endpoint tests: contract, validation, authorization (allowed **and** denied) | — | Required if `api` | Required |
+| Every changed endpoint covered at the HTTP boundary | — | Required if `api` | Required |
+| Data model (ERD + data dictionary) current | — | Required if `database` | Required if state changes |
 | Migration validation and schema review | — | Required if `database` | Required if state changes |
+| UI foundation approved (first `ui` change only) | — | Required if `ui` | Required if `ui` |
+| Changelog entry under `[Unreleased]` | Optional | Required | Required |
 | Threat model / specialist review | — | — | Required for `security`, `mcp-write`, `infra` |
 | Dependency provenance and vulnerability diff | — | Required if `dependency` | Required if `dependency` |
 

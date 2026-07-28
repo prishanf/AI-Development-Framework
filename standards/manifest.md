@@ -1,21 +1,27 @@
 # Project Manifest
 
-The project manifest is the adapter-neutral source of truth for a project's workflow. Copy [templates/project.yaml](../templates/project.yaml) into the target repository, then fill in project-specific values.
+The project manifest is the adapter-neutral source of truth for a project's workflow. `reference/scripts/aidf-install.sh` places it at the target repository's root, from [templates/project.yaml](../templates/project.yaml); then fill in project-specific values.
 
 It is machine-validated. [schemas/project.schema.json](../schemas/project.schema.json) defines the contract, and `reference/scripts/validate-manifest.sh` enforces it. A manifest that does not validate is a build failure, not a warning — a typo'd key silently disables a gate, which is the worst possible failure mode for a file whose job is to enable gates.
 
 ## Required sections
 
-- `framework` — framework version and project identifier;
+- `framework` — framework version, project identifier, and `root`: the directory the framework is vendored into (`.aidf` by default);
 - `repository` — integration branch, production branch, optional QA branch, worktree policy;
-- `commands` — verification commands;
-- `documents` — locations for specs, plans, decisions, state, and releases;
+- `commands` — verification commands, plus `mockup_serve` for `ui` work;
+- `documents` — locations for specs, plans, designs, the data model, decisions, state, and releases;
 - `gates` — approval requirements;
 - `environments` — lifecycle, data policy, cleanup, and approval boundaries;
 - `database` — migration, clone, seed, and credential policy;
 - `evidence` — which runners may corroborate a gate;
-- `api` and `mcp` — contract, NFR, authorization, and audit expectations;
+- `ui` — CSS framework, the token layer both the app and the mockup read, the foundation document, and breakpoints;
+- `api` and `mcp` — contract, NFR, authorization, and audit expectations, plus the route and test globs the endpoint-coverage gate needs;
 - `adapters` — enabled agent surfaces and their instruction paths.
+
+Two of these are load-bearing for gates that would otherwise be unevaluable:
+
+- **`ui.tokens`** names the one file the application and its design mockup both read. Without it, the mockup has no way to be visually truthful and the design approval covers a palette the product does not have. See [ui-and-preview.md](ui-and-preview.md).
+- **`api.route_globs`** and **`api.test_globs`** are what `check-api-coverage.sh` enumerates. Leave them unset and the `api` tag's endpoint gate **fails** — it does not skip, for the same reason an empty `test` command fails.
 
 There is no `quality_profiles` section. Risk tags and their required evidence are defined once, in [quality-gates.md](quality-gates.md); the manifest may reference tag names but never redefine what they require. `check-consistency.sh` fails the build if a manifest names a tag the standard does not define.
 

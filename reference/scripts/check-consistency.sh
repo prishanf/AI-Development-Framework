@@ -106,6 +106,39 @@ for rel in ("project.yaml", "templates/project.yaml"):
             if name not in expected:
                 problems.append("%s: tag '%s' is not defined in standards/quality-gates.md" % (rel, name))
 
+# ------------------------------------------ the vendored set stays self-closed
+# aidf-install.sh copies only part of this repository into a project's .aidf/
+# directory. That subset must be closed under linking: if a vendored file links
+# to an excluded one, the link is fine here and broken in every project that
+# installs the framework -- a failure invisible from inside this repository.
+VENDORED = {"commands", "standards", "templates", "schemas", "guide", "reference", "adapters"}
+EXCLUDED = {"diagrams", "examples", "presentation-deck"}
+for rel in walk():
+    top = rel.split(os.sep)[0]
+    if top not in VENDORED:
+        continue
+    src_dir = os.path.dirname(os.path.join(root, rel))
+    for target in link_re.findall(read(rel)):
+        target = target.split("#")[0].strip()
+        if not target or target.startswith(("http://", "https://", "mailto:")):
+            continue
+        resolved = os.path.relpath(os.path.normpath(os.path.join(src_dir, target)), root)
+        target_top = resolved.split(os.sep)[0]
+        if target_top in EXCLUDED:
+            problems.append(
+                "%s: links to %s, which aidf-install.sh does not vendor -- the link "
+                "would be broken in every installed project" % (rel, resolved))
+
+# The installer's vendor list must match the one asserted above, or this check
+# is validating a set nobody installs.
+installer = read("reference/scripts/aidf-install.sh")
+declared = re.search(r'^VENDOR = \[([^\]]*)\]', installer, re.M)
+if not declared:
+    problems.append("reference/scripts/aidf-install.sh: no VENDOR list found")
+elif {n.strip().strip('"\'') for n in declared.group(1).split(",") if n.strip()} != VENDORED:
+    problems.append("reference/scripts/aidf-install.sh: VENDOR list disagrees with "
+                    "check-consistency.sh's VENDORED set")
+
 # --------------------------------------------- deleted artifacts stay deleted
 for gone, why in [("templates/change-classification.md", "classification is spec front matter"),
                   ("templates/seed-data-plan.md", "merged into templates/migration-plan.md")]:

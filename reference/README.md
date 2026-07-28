@@ -8,12 +8,15 @@ They exist because AIDF v1 described quality gates without implementing a single
 
 | Path | Purpose | Depends on |
 |---|---|---|
+| `scripts/aidf-install.sh` | Install or upgrade the framework in a project as one vendored `.aidf/` directory | `python3` |
 | `scripts/validate-manifest.sh` | Validate `project.yaml` against the schema; empty required commands fail | `python3` |
 | `scripts/validate-evidence.sh` | Enforce the corroboration rule and waiver validity | `python3` |
 | `scripts/run-gates.sh` | Run the track's required checks, emit `evidence.json` | `python3`, `git` |
+| `scripts/check-api-coverage.sh` | Fail when a changed endpoint has no test that exercises it over HTTP | `python3` |
 | `scripts/check-consistency.sh` | Catch framework self-contradictions and broken links | `python3` |
 | `scripts/self-test.sh` | Prove the gates fail when they should | `python3` |
 | `scripts/lib/minischema.py` | Dependency-free JSON Schema subset validator | — |
+| `mockup/` | Working design-mockup scaffold: shared tokens, fixtures, states, `serve.sh` | `python3` to serve |
 | `github/workflows/aidf-gates.yml` | PR-time gates, evidence upload, size budget | GitHub Actions |
 | `github/workflows/aidf-selfcheck.yml` | Consistency + self-test + diagram parsing | GitHub Actions |
 | `github/PULL_REQUEST_TEMPLATE.md` | Links evidence rather than restating it | GitHub |
@@ -23,13 +26,13 @@ They exist because AIDF v1 described quality gates without implementing a single
 
 ## Adopting it
 
+One command, from a clone of the framework:
+
 ```bash
-cp -r reference/github/workflows/. .github/workflows/
-cp reference/github/PULL_REQUEST_TEMPLATE.md .github/
-cp reference/github/CODEOWNERS .github/
-cp templates/project.yaml project.yaml
-sh reference/scripts/validate-manifest.sh project.yaml
+sh reference/scripts/aidf-install.sh --target /path/to/your/project
 ```
+
+That vendors the framework into `your-project/.aidf/`, installs `AGENTS.md`, `project.yaml`, the CI workflows, the adapter files, and the `docs/` tree — and leaves anything you already have alone. Upgrade later with `--upgrade`, which refreshes the vendored tree and touches nothing project-owned. See [aidf-install.sh](scripts/aidf-install.sh) for the options and the reasoning.
 
 Then, in repository settings:
 

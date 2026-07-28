@@ -46,6 +46,43 @@ For a typical change:
 
 Deliberately included in that table: authorization tests of the *denied* path. Broken access control is the most common serious vulnerability in real applications, and it is invisible to a suite that only ever tests authorized users.
 
+## API endpoint coverage
+
+The `api` tag has always required "contract and authorization tests", and that phrasing turned out to be satisfiable by tests that never touch an endpoint. The observed failure mode: a change adds fourteen routes, the agent writes three unit tests against the pure helper functions those routes call, every gate goes green, and not one HTTP request is made in the entire suite. The helpers were tested. The API was not.
+
+So the rule is stated mechanically:
+
+> **An endpoint added or changed without a test that exercises it through the real router — request in, response out — is not covered.** A unit test of a handler's helpers, validators, or aggregation functions is valuable and is *not* endpoint coverage.
+
+What "through the real router" means in practice: the request goes through the project's actual routing, middleware, authentication, serialization, and error handling, and the test asserts on the status code and the response body. Whether that is an in-process test harness, a running server on an ephemeral port, or the framework's own test client is a project choice — the manifest's `test` command runs it either way.
+
+### Required cases per endpoint
+
+Every changed endpoint needs each applicable row. "Not applicable" is a legitimate answer with a reason; silence is not.
+
+| Case | Asserts | Applies to |
+|---|---|---|
+| Success | The documented 2xx status **and specific values in the body** — not merely that a body exists | every endpoint |
+| Validation failure | 4xx per validated field, with the documented error shape | every endpoint accepting input |
+| Unauthenticated | 401 (not 200, not 500) with no data leaked | every authenticated endpoint |
+| Authenticated but forbidden | 403 **per role and per object** — the caller who is logged in but owns a different row | every endpoint touching owned data |
+| Not found | 404, and 404 rather than 403 only where that is the deliberate policy | every endpoint addressing a resource |
+| Cross-tenant / horizontal access | Another tenant's identifier returns 404/403, never that tenant's data | every multi-tenant endpoint |
+| Conflict / duplicate | The documented 409/422 on unique or state-conflict violations | writes with uniqueness or state rules |
+| Unknown fields | The documented behaviour — rejected or ignored, whichever the contract says | every endpoint accepting a body |
+| Pagination and limits | First page, last page, past the end, over the maximum page size | every list endpoint |
+| Idempotency / replay | Replaying the same write produces the documented result, not a duplicate row | every non-idempotent write |
+| Empty collection | An empty list, not null and not an error | every list endpoint |
+| Error shape | Errors match the contract's format and leak no internals or stack traces | every endpoint |
+
+The cross-tenant row is the one worth writing first. It is the test most often missing and the failure most expensive in production.
+
+### Where these are recorded
+
+[templates/api-contract.md](../templates/api-contract.md) carries an endpoint inventory and test matrix: one row per endpoint, naming the test file that covers it. That table is the artifact a reviewer checks against the route list, and `reference/scripts/check-api-coverage.sh` checks the same thing mechanically — it enumerates endpoint files from the manifest's `api.route_globs` and fails when a route has no test referencing its path.
+
+The script catches the absent test. It cannot judge whether the test asserts anything, which is what the matrix, the reviewer, and the anti-patterns above are for. Neither half works alone.
+
 ## Flaky tests
 
 A flaky test is a defect, not a status. It has two honest resolutions: fix it, or delete it and record the coverage gap. Retrying until green teaches everyone — human and agent — that a red check is negotiable, which quietly disables every gate that depends on it.

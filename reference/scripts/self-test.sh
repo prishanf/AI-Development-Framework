@@ -82,6 +82,83 @@ JSON
 expect_fail "waiver without approver/expiry/follow-up is invalid" \
   sh "$ROOT/reference/scripts/validate-evidence.sh" "$TMP/nowaiver.json" "$ROOT/project.yaml"
 
+# --------------------------------------------------- api endpoint coverage
+# The gap this closes was real: fourteen routes shipped with three unit tests
+# of their helper functions and every gate green. These cases prove the check
+# distinguishes an HTTP-level test from a helper unit test -- if they ever stop
+# proving it, the `api` tag is decorative again.
+echo
+echo "api endpoint coverage"
+
+API="$TMP/api"
+mkdir -p "$API/server/api/widgets" "$API/tests"
+: > "$API/server/api/widgets/index.get.ts"
+cat > "$API/project.yaml" <<'YAML'
+api:
+  route_root: server/api
+  route_url_prefix: /api
+  route_globs: ["server/api/**/*.ts"]
+  test_globs: ["tests/**/*.test.ts"]
+YAML
+
+expect_fail "an endpoint with no test at all fails the api gate" \
+  sh "$ROOT/reference/scripts/check-api-coverage.sh" --manifest "$API/project.yaml"
+
+cat > "$API/tests/helpers.test.ts" <<'TS'
+import { normalise } from "../server/utils/widgets";
+// exercises the logic behind GET /api/widgets
+it("normalises", () => { expect(normalise({})).toEqual({}); });
+TS
+expect_fail "a helper unit test naming the endpoint is NOT endpoint coverage" \
+  sh "$ROOT/reference/scripts/check-api-coverage.sh" --manifest "$API/project.yaml"
+
+cat > "$API/tests/http.test.ts" <<'TS'
+it("lists widgets", async () => {
+  const res = await fetch("/api/widgets");
+  expect(res.status).toBe(200);
+});
+TS
+expect_pass "a test that requests the endpoint over HTTP satisfies it" \
+  sh "$ROOT/reference/scripts/check-api-coverage.sh" --manifest "$API/project.yaml"
+
+cat > "$API/unconfigured.yaml" <<'YAML'
+api:
+  contract_required_for_changed_apis: true
+YAML
+expect_fail "an unconfigured api block fails closed, not open" \
+  sh "$ROOT/reference/scripts/check-api-coverage.sh" --manifest "$API/unconfigured.yaml"
+
+# --------------------------------------------------------------- changelog
+# Mirrors the api-coverage gap: a project could ship Track B/C changes with
+# every other gate green and no record of what changed anywhere but git log.
+echo
+echo "changelog"
+
+CL="$TMP/changelog"
+mkdir -p "$CL"
+git -C "$CL" init -q
+printf 'root: .\n' > "$CL/project.yaml"
+printf '# Changelog\n\n## [Unreleased]\n' > "$CL/CHANGELOG.md"
+git -C "$CL" add -A && git -C "$CL" -c user.email=t@t -c user.name=t commit -q -m seed
+git -C "$CL" branch -q base
+
+echo "hello" >> "$CL/app.js"
+git -C "$CL" add app.js
+git -C "$CL" -c user.email=t@t -c user.name=t commit -q -m "add feature"
+
+expect_fail "track B change with no changelog entry fails" \
+  sh "$ROOT/reference/scripts/check-changelog.sh" --track B --manifest "$CL/project.yaml" --base base
+
+expect_pass "track A change is optional, not enforced" \
+  sh "$ROOT/reference/scripts/check-changelog.sh" --track A --manifest "$CL/project.yaml" --base base
+
+printf '# Changelog\n\n## [Unreleased]\n- Added the widgets feature.\n' > "$CL/CHANGELOG.md"
+git -C "$CL" add CHANGELOG.md
+git -C "$CL" -c user.email=t@t -c user.name=t commit -q -m "changelog: widgets"
+
+expect_pass "track B change with a changelog entry passes" \
+  sh "$ROOT/reference/scripts/check-changelog.sh" --track B --manifest "$CL/project.yaml" --base base
+
 echo
 printf 'aidf self-test: %d passed, %d failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]
