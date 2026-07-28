@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **Installed projects no longer run framework-only `check-consistency.sh` in CI.** `reference/github/workflows/aidf-selfcheck.yml` (copied by `aidf-install.sh`) now validates `project.yaml` only. The full consistency + self-test + Mermaid suite stays in the framework repository's `.github/workflows/aidf-selfcheck.yml`. `check-consistency.sh` exits early with a clear message when run from a vendored `.aidf/` tree (no `diagrams/`), instead of `FileNotFoundError` on `diagrams/lifecycle.md`.
+
 ## [5.0.0] — 2026-07-27
 
 Five gaps found by shipping a real feature with v4.0.0 — a personal income/expense tracker built end to end — and then reading what the framework had actually produced. Four of the five are visible as concrete artifacts in that repository, which is the point: each was a rule the framework stated loosely enough to be satisfied without being met.

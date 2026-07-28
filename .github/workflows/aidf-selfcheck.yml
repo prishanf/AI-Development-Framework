@@ -1,9 +1,9 @@
-# AIDF self-consistency check — run this on the framework repository itself,
-# and on any project that vendors the framework documents.
+# AIDF self-consistency check — for the **framework repository only**.
 #
-# It catches the class of defect that killed AIDF v1: documents that quietly
-# disagree with each other. Agents read these files literally, so a
-# contradiction is not a style problem — it is a correctness problem.
+# Projects that install AIDF via aidf-install.sh get a different workflow from
+# reference/github/workflows/aidf-selfcheck.yml (manifest validation). Do not
+# copy this file into an application repo: it requires diagrams/ and other
+# paths that are not vendored into .aidf/.
 
 name: AIDF self-check
 
