@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.1] — 2026-07-27
+
+### Fixed
+
+- **`validate-evidence.sh` no longer rejects human `not_run` gates on PR CI.** `run-gates.sh` records `pr-approval` (and other human-only gates) as `not_run` because CI cannot satisfy them; treating that as a failed evidence contract made every PR fail `Enforce evidence contract`. Automated `not_run` still fails closed. `self-test.sh` covers both cases.
+- **Installed projects no longer run framework-only `check-consistency.sh` in CI.** `reference/github/workflows/aidf-selfcheck.yml` (copied by `aidf-install.sh`) now validates `project.yaml` only. The full consistency + self-test + Mermaid suite stays in the framework repository's `.github/workflows/aidf-selfcheck.yml`. `check-consistency.sh` exits early with a clear message when run from a vendored `.aidf/` tree (no `diagrams/`), instead of `FileNotFoundError` on `diagrams/lifecycle.md`.
+
 ## [5.0.0] — 2026-07-27
 
 Five gaps found by shipping a real feature with v4.0.0 — a personal income/expense tracker built end to end — and then reading what the framework had actually produced. Four of the five are visible as concrete artifacts in that repository, which is the point: each was a rule the framework stated loosely enough to be satisfied without being met.
