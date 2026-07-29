@@ -111,6 +111,6 @@ measured results.
 Act V's product is a composite and is labelled as one on slide 26. What is
 *not* invented there is the process: every gate, tag, branch name, and document
 on slides 27–31 is what `guide/`, `standards/`, and `commands/` actually
-specify at v5.0.1. If you change the framework, re-read those five slides.
+specify at v5.0.2. If you change the framework, re-read those five slides.
 
 If you add a number, be able to name where it came from.
