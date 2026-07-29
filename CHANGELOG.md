@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.1.0] — 2026-07-29
+
+### Added
+
+- **`/ship` requires an annotated version tag matching release notes.** Shipping a real project (AIDF Quick Notes v0.1.0) produced release notes and a `main` cut with no git tag — the framework never asked for one. Release notes front-matter `version` is now the intended annotated tag name. Default `ship` remains docs-only; when a human authorizes the production cut, the agent creates and pushes that tag on the production tip (no move/force-update if the name already points elsewhere). Release-time gates, branching rules, workflow `released` exit evidence, release-notes and deployment-record templates, and the release-agent role all name the same rule.
+
 ## [5.0.2] — 2026-07-28
 
 ### Fixed
