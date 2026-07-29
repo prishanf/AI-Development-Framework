@@ -15,6 +15,10 @@ The default model is **GitFlow**: two protected long-lived branches (`main`, `de
 
 `repository.integration_branch` is `develop`; `repository.production_branch` is `main`; `repository.qa_branch` names the branch whose deployment serves as the QA environment (`develop` by default — see [standards/environments.md](environments.md)).
 
+## When the feature branch is cut
+
+Cut `feat/*` / `fix/*` only at **Isolate** — after the feature spec is approved and, for Track B/C, after the implementation plan's `Approval.decision` is `approved`. The approved spec and plan are committed on the integration branch (`develop` by default) **before** that cut. Implementation commits belong on the short-lived branch. Creating the feature branch earlier to hold draft paperwork is outside this model; see [guide/03-workflow.md](../guide/03-workflow.md) steps 2, 7, and 9.
+
 ## Commit guidance
 
 Commits should be coherent and reversible. Use imperative subjects and include the issue key when the host supports it. Do not use commits to disguise unrelated changes.

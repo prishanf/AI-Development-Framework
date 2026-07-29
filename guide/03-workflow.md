@@ -7,15 +7,15 @@ The lifecycle below is the full Track C path. Track B skips the tag-driven artif
 ## Lifecycle
 
 1. **Discover** — capture the problem and the relevant repository context.
-2. **Specify** — draft a feature spec; ask questions where facts or intent are missing.
+2. **Specify** — draft a feature spec; ask questions where facts or intent are missing. Commit the draft (and later the approved revision) on the integration branch — `develop` by default — **before** any feature branch exists. Spec and plan are not first committed on `feat/*`.
 3. **Classify** — assign track, risk level, and tags in the spec front matter. This happens **once**, here, as part of the spec. Nothing downstream re-classifies.
 4. **Approve** — a human accepts the problem, outcome, scope, classification, and risk posture.
 5. **Design** *(ui tag only)* — produce `templates/design.md`: flow, every required state, and — by default — a clickable static mockup built with mock data, distinct from and earlier than the Preview environment in step 12. A human design/product owner approves the design and mockup together before planning begins. Skipped when the `ui` tag is absent. See [standards/ui-and-preview.md](../standards/ui-and-preview.md).
 6. **Track** — create or update the issue with a link to the approved spec (and design, if produced).
-7. **Plan** — inspect the repository, identify files and dependencies, write an implementation plan.
+7. **Plan** — inspect the repository, identify files and dependencies, write an implementation plan. Like the spec, commit it on `develop` (or the project's integration branch) while it is still draft and again when approved — still **before** Isolate.
 8. **Approve plan** — for Track B and C, a human approves the implementation plan before any code is written. Track A has no plan document and skips this step.
-9. **Isolate** — create a branch off `develop` (`main` for a hotfix), and a worktree — see [standards/worktrees.md](../standards/worktrees.md). Under the default GitFlow model this is not optional busywork: `develop` and `main` are long-lived worktrees off a shared bare clone, and every feature/fix/release/hotfix branch gets its own sibling worktree.
-10. **Build** — implement in small increments, adding tests and updating the plan as facts change.
+9. **Isolate** — **this is when the feature branch is created.** Cut `feat/<issue>-<slug>` (or `fix/...`) off `develop` (`hotfix/...` off `main`), and add a worktree — see [standards/worktrees.md](../standards/worktrees.md) and [standards/branching.md](../standards/branching.md). Do not create the feature branch earlier to hold the spec or plan. Under the default GitFlow model this is not optional busywork: `develop` and `main` are long-lived worktrees off a shared bare clone, and every feature/fix/release/hotfix branch gets its own sibling worktree.
+10. **Build** — on the branch from step 9, implement in small increments, adding tests and updating the plan as facts change.
 11. **Verify** — run the track's required checks and emit evidence.
 12. **Preview** — deploy isolated state and complete UI QA. Required only for `ui`, `api`, and `database` tags.
 13. **Open PR** — open the pull request to `develop` with linked evidence. The build agent's next action is `review`, not a human handoff.
@@ -23,7 +23,17 @@ The lifecycle below is the full Track C path. Track B skips the tag-driven artif
 15. **Human review** — every PR receives an authorized human approval; remaining findings are resolved or accepted with evidence. Merges to `develop`.
 16. **Release** — when the release scope on `develop` is complete, cut `release/<version>`, harden and sign off in the QA environment, obtain production approval, merge to `main` under protected-branch policy, create and push an annotated git tag whose name equals the release notes `version` on that tip, deploy through CI, observe, back-merge to `develop`, and update durable documents.
 
-Classification (step 3) precedes planning deliberately: the plan cannot know which gates apply until the track is fixed. Design (step 5) precedes planning for the same reason applied to UX: a plan built against an unapproved screen is a plan for the wrong feature.
+Classification (step 3) precedes planning deliberately: the plan cannot know which gates apply until the track is fixed. Design (step 5) precedes planning for the same reason applied to UX: a plan built against an unapproved screen is a plan for the wrong feature. Isolate (step 9) comes **after** plan approval for the same reason applied to Git: a feature branch that exists only to hold unapproved paperwork is the wrong place for durable intent, and implementation must not start until that intent is approved.
+
+### Where documents and code land
+
+| Artifact | Lifecycle steps | Lands on |
+|---|---|---|
+| Feature spec (and design, if `ui`) | 2–5 | Integration branch (`develop` by default) |
+| Implementation plan | 7–8 | Integration branch (`develop` by default) |
+| Implementation, tests, PR | 9–15 | Feature/fix branch off `develop` (hotfix off `main`) |
+
+Track A skips steps 2–8 and opens its PR branch directly for the change itself.
 
 ## State transitions
 

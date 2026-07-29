@@ -73,7 +73,8 @@ flowchart LR
     designapprove -->|Yes| plan[Plan]
     plan --> planapprove{Human approves plan}
     planapprove -->|No| plan
-    planapprove -->|Yes| build[Worktree off develop, build + tests]
+    planapprove -->|Yes| isolate[Isolate: feat branch from develop]
+    isolate --> build[Build + tests on feature branch]
     build --> verify[Verify: corroborated evidence]
     verify --> pr[Pull request to develop]
     pr --> aireview[AI review on PR]
@@ -85,7 +86,7 @@ flowchart LR
     build -.->|stop condition| halt[Stop, hand back]
 ```
 
-[guide/03-workflow.md](guide/03-workflow.md) is the canonical definition; this diagram is derived from it.
+[guide/03-workflow.md](guide/03-workflow.md) is the canonical definition; this diagram is derived from it. Branch timing and where the spec/plan land: [diagrams/lifecycle.md](diagrams/lifecycle.md). Who leads each activity (AI vs human vs CI): [diagrams/ai-human-flow.md](diagrams/ai-human-flow.md).
 
 ## Principles
 
