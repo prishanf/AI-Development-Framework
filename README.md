@@ -2,7 +2,7 @@
 
 **AIDF** is a lightweight, AI-agnostic operating system for building software with coding agents. One shared workflow, vocabulary, document lifecycle, and set of safety boundaries — usable with Claude Code, Codex, Cursor, Gemini CLI, Aider, OpenHands, or whatever comes next.
 
-**Version:** 5.0.2 · **Status:** usable foundation with running gates
+**Version:** 5.1.0 · **Status:** usable foundation with running gates
 
 ## Process proportional to risk
 
