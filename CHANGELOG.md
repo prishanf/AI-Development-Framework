@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.1.1] — 2026-07-29
+
+### Fixed
+
+- **Design mockups are one package per product surface, not one copy per feature.** The `design` command told agents to `copy reference/mockup/` for every `ui` change, which produced duplicated `tokens` / `shell` / `seed` trees when successive features extended the same screen (seen on AIDF Quick Notes Features 1–3). Agents must now **extend** an existing mockup package for the same surface; copy the scaffold only for a first package or a genuinely new screen. Prefer a symlink for `css/tokens.css` to `ui.tokens`. Updated: `commands/design.md`, `standards/ui-and-preview.md`, `reference/mockup/README.md`, `templates/design.md`.
+
 ## [5.1.0] — 2026-07-29
 
 ### Added
