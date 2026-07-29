@@ -1,6 +1,6 @@
 # Agent instructions
 
-This repository follows the [AI Development Framework](README.md) v5.1.2.
+This repository follows the [AI Development Framework](README.md) v5.2.0.
 
 ## Before acting
 

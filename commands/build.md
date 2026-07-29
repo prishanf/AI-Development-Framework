@@ -84,7 +84,7 @@ Return: summary, files changed, checks and exact outcomes, deviations, risks, an
 - `api`: every changed endpoint is exercised through the real router, denied paths included; `check-api-coverage.sh` passes.
 - `ui`: no raw colour, type size, spacing, or breakpoint value outside the token layer.
 - `database`: the data model document matches the schema as built.
-- Track B/C: an entry describing this change was added under `[Unreleased]` in the project's `CHANGELOG.md`; `check-changelog.sh` passes. Track A: optional.
+- Track B/C: an entry describing this change was added to the project's `CHANGELOG.md` under a **version** heading — never an `[Unreleased]` section — and the version files were bumped to match; `check-changelog.sh` passes. Track A: optional.
 - No unrelated refactor is included.
 - Checks are run, or the reason for omission is explicit.
 - No check result is asserted that a runner did not produce.

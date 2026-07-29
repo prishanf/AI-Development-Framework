@@ -151,7 +151,7 @@ CL="$TMP/changelog"
 mkdir -p "$CL"
 git -C "$CL" init -q
 printf 'root: .\n' > "$CL/project.yaml"
-printf '# Changelog\n\n## [Unreleased]\n' > "$CL/CHANGELOG.md"
+printf '# Changelog\n\n## [0.1.0] — in development\n' > "$CL/CHANGELOG.md"
 git -C "$CL" add -A && git -C "$CL" -c user.email=t@t -c user.name=t commit -q -m seed
 git -C "$CL" branch -q base
 
@@ -165,12 +165,24 @@ expect_fail "track B change with no changelog entry fails" \
 expect_pass "track A change is optional, not enforced" \
   sh "$ROOT/reference/scripts/check-changelog.sh" --track A --manifest "$CL/project.yaml" --base base
 
-printf '# Changelog\n\n## [Unreleased]\n- Added the widgets feature.\n' > "$CL/CHANGELOG.md"
+printf '# Changelog\n\n## [0.2.0] — 2026-01-01\n\n- Added the widgets feature.\n' > "$CL/CHANGELOG.md"
 git -C "$CL" add CHANGELOG.md
 git -C "$CL" -c user.email=t@t -c user.name=t commit -q -m "changelog: widgets"
 
 expect_pass "track B change with a changelog entry passes" \
   sh "$ROOT/reference/scripts/check-changelog.sh" --track B --manifest "$CL/project.yaml" --base base
+
+# An entry parked under [Unreleased] is never dated or shipped, so the record
+# stops answering what is in the revision being run. Rejected on every track.
+printf '# Changelog\n\n## [Unreleased]\n\n- Added the widgets feature.\n' > "$CL/CHANGELOG.md"
+git -C "$CL" add CHANGELOG.md
+git -C "$CL" -c user.email=t@t -c user.name=t commit -q -m "changelog: unreleased section"
+
+expect_fail "an [Unreleased] section fails on track B" \
+  sh "$ROOT/reference/scripts/check-changelog.sh" --track B --manifest "$CL/project.yaml" --base base
+
+expect_fail "an [Unreleased] section fails on track A too" \
+  sh "$ROOT/reference/scripts/check-changelog.sh" --track A --manifest "$CL/project.yaml" --base base
 
 echo
 printf 'aidf self-test: %d passed, %d failed\n' "$PASS" "$FAIL"

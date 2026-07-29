@@ -13,6 +13,10 @@
 # log, and the git log is commit-message discipline, not a reviewable record.
 # Track A (typo fixes, comment changes, formatting) is exempt: forcing an
 # entry for every trivial change trains people to write meaningless ones.
+#
+# Every heading must name a version. An `[Unreleased]` section is rejected on
+# any track: it accumulates entries nobody has to date or ship, so the record
+# stops answering "what is in the revision I am running?".
 
 set -eu
 
@@ -34,6 +38,22 @@ done
 [ -n "$TRACK" ] || { echo "aidf: --track is required" >&2; exit 2; }
 command -v python3 >/dev/null 2>&1 || { echo "aidf: python3 is required" >&2; exit 2; }
 [ -f "$MANIFEST" ] || { echo "aidf: manifest not found: $MANIFEST" >&2; exit 2; }
+
+ROOT_FOR_HEADING=$(CDPATH= cd -- "$(dirname -- "$MANIFEST")" && pwd)
+CHANGELOG_REL=$(sed -n 's/^[[:space:]]*changelog:[[:space:]]*\([^[:space:]#]*\).*/\1/p' "$MANIFEST" | head -1)
+CHANGELOG_REL=${CHANGELOG_REL:-CHANGELOG.md}
+CHANGELOG_ABS="$ROOT_FOR_HEADING/$CHANGELOG_REL"
+
+# Applies on every track, including A: an unversioned section is a defect in the
+# record itself, not a property of the change that touched it.
+if [ -f "$CHANGELOG_ABS" ] && grep -qi '^#\{1,3\}[[:space:]]*\[\{0,1\}unreleased' "$CHANGELOG_ABS"; then
+  echo "aidf: $CHANGELOG_REL has an [Unreleased] section."
+  echo
+  echo "FAIL  Every changelog heading must name a version. Replace [Unreleased]"
+  echo "      with the version this change ships as, and bump the version files"
+  echo "      to match. See standards/quality-gates.md."
+  exit 1
+fi
 
 if [ "$TRACK" = "A" ]; then
   echo "aidf: track A -- changelog entry optional, not checked"
@@ -106,7 +126,8 @@ for p in source_changes[:15]:
     print("  - %s" % p)
 if len(source_changes) > 15:
     print("  ... and %d more" % (len(source_changes) - 15))
-print("\nFAIL  Track B/C changes require a changelog entry. Add one under")
-print("      [Unreleased] in %s describing what changed and why." % changelog)
+print("\nFAIL  Track B/C changes require a changelog entry. Add one in %s" % changelog)
+print("      under a version heading -- never [Unreleased] -- describing what")
+print("      changed and why, and bump the version files to match.")
 sys.exit(1)
 PY
