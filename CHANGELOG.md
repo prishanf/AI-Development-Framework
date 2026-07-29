@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.2] — 2026-07-28
+
+### Fixed
+
+- **The version files now report 5.0.1.** The 5.0.1 entry below landed without the bump that goes with it, leaving `VERSION`, `README.md`, `AGENTS.md`, `project.yaml`, and `templates/project.yaml` all claiming 5.0.0. `templates/project.yaml` matters most of the five: it seeds `framework.version` for every new install, so a fresh project would have pinned 5.0.0 while vendoring a 5.0.1 tree and reported a mismatch on its first gate run. `check-consistency.sh` compares `VERSION` against the other four and passes again.
+
 ## [5.0.1] — 2026-07-27
 
 ### Fixed
