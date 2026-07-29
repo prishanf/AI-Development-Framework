@@ -1,0 +1,1380 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Development Framework — Talk Deck</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <!-- Arrowheads are defined once, document-scoped, and referenced by every
+         diagram. A zero-size positioned SVG keeps them renderable; display:none
+         would make some browsers drop the marker. -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+      <marker id="mLine" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#c9bfab"></path>
+      </marker>
+      <marker id="mAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#0d6b63"></path>
+      </marker>
+      <marker id="mDanger" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#a5321f"></path>
+      </marker>
+      <marker id="mSuccess" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#1b6a49"></path>
+      </marker>
+      <marker id="mWarn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#8c5f10"></path>
+      </marker>
+    </defs></svg>
+
+    <main class="deck" aria-live="polite">
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ACT I — The bottleneck moved
+           ═══════════════════════════════════════════════════════════ -->
+
+      <section class="slide slide--title active" data-title="Title" data-act="">
+        <p class="eyebrow">AI Development Framework</p>
+        <h1>Turning agent speed into change you can actually approve.</h1>
+        <p class="subtitle">A provider-agnostic operating model for AI-assisted delivery — where every gate is executable and no claim counts as evidence.</p>
+        <div class="title-meta">
+          <span>Talk deck</span>
+          <span>AIDF v5.0.2</span>
+          <span>~55 minutes</span>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Bio" data-act="">
+        <p class="eyebrow">Who is talking</p>
+        <h2>Prishan Fernando</h2>
+        <div class="bio-grid">
+          <div>
+            <p class="large">I build delivery workflows for teams that ship with coding agents.</p>
+            <p>This framework is not theory. I built it, then used it to ship a real application end to end — and the parts that broke are why version 5 exists. Several slides in this deck are failures found that way.</p>
+          </div>
+          <div class="bio-card">
+            <p>Hands-on architect who'd rather build the thing than talk about it — 20+ years writing software, the last two obsessed with what AI-assisted delivery can responsibly become.</p>
+            <p>I care about this because safe AI implementation is not a feature, it's a prerequisite. Teams shipping fast without trust are just accelerating toward production chaos.</p>
+          </div>
+        </div>
+        <aside class="notes">Opener: "Everyone here has had an agent hand them nine hundred lines that look right. This talk is about the hour after that."</aside>
+      </section>
+
+      <section class="slide slide--statement" data-title="The bottleneck" data-act="">
+        <p class="eyebrow">Where we are</p>
+        <p class="statement">Agents made writing code cheap. They did <em>not</em> make trusting it cheap.</p>
+        <p class="fine">Implementation used to be the slow part. It isn't any more — so every queue behind it is now the constraint: review, testing, alignment, and the decision to release.</p>
+      </section>
+
+      <section class="slide" data-title="Two paths" data-act="I · The bottleneck moved">
+        <p class="eyebrow">The whole argument, once</p>
+        <h2>Same change, same agent, same diff. Two systems around it.</h2>
+        <div class="dgm">
+          <svg viewBox="0 0 1240 400" role="img" aria-label="One change follows two paths: without the framework it merges on a green build and a user finds the defect; with the framework the gates find it before merge.">
+            <!-- entry -->
+            <rect class="d-node" x="14" y="168" width="164" height="64" rx="4"></rect>
+            <text class="d-label" x="96" y="194" text-anchor="middle">A change</text>
+            <text class="d-sub" x="96" y="214" text-anchor="middle">built by an agent</text>
+
+            <!-- branch -->
+            <path class="d-flow" d="M178,190 C220,190 220,112 254,112" marker-end="url(#mLine)"></path>
+            <path class="d-flow" d="M178,210 C220,210 220,290 254,290" marker-end="url(#mLine)"></path>
+
+            <!-- WITHOUT lane -->
+            <text class="d-cap d-cap--danger" x="258" y="66">Without a shared operating model</text>
+            <g>
+              <rect class="d-node" x="258" y="86" width="128" height="52" rx="4"></rect>
+              <text class="d-mono" x="322" y="117" text-anchor="middle" style="fill:var(--ink-2)">build</text>
+              <path class="d-flow" d="M386,112 H420" marker-end="url(#mLine)"></path>
+
+              <rect class="d-node" x="424" y="86" width="128" height="52" rx="4"></rect>
+              <text class="d-mono" x="488" y="117" text-anchor="middle" style="fill:var(--ink-2)">open PR</text>
+              <path class="d-flow" d="M552,112 H586" marker-end="url(#mLine)"></path>
+
+              <rect class="d-node d-node--success" x="590" y="86" width="140" height="52" rx="4"></rect>
+              <text class="d-label" x="660" y="110" text-anchor="middle" style="font-size:13.5px">checks green</text>
+              <text class="d-sub" x="660" y="127" text-anchor="middle">nothing looked for this</text>
+              <path class="d-flow" d="M730,112 H764" marker-end="url(#mLine)"></path>
+
+              <rect class="d-node" x="768" y="86" width="112" height="52" rx="4"></rect>
+              <text class="d-mono" x="824" y="117" text-anchor="middle" style="fill:var(--ink-2)">merge</text>
+              <path class="d-flow--danger" d="M880,112 H916" marker-end="url(#mDanger)"></path>
+
+              <rect class="d-node d-node--danger" x="920" y="80" width="306" height="64" rx="4"></rect>
+              <text class="d-label" x="1073" y="106" text-anchor="middle" style="fill:var(--danger)">A user finds the defect</text>
+              <text class="d-sub" x="1073" y="126" text-anchor="middle">in production, with real data</text>
+            </g>
+
+            <!-- WITH lane -->
+            <text class="d-cap d-cap--success" x="258" y="352">With the framework</text>
+            <g>
+              <rect class="d-node" x="258" y="264" width="128" height="52" rx="4"></rect>
+              <text class="d-mono" x="322" y="295" text-anchor="middle" style="fill:var(--ink-2)">build</text>
+              <path class="d-flow" d="M386,290 H420" marker-end="url(#mLine)"></path>
+
+              <rect class="d-node d-node--accent" x="424" y="264" width="128" height="52" rx="4"></rect>
+              <text class="d-label" x="488" y="288" text-anchor="middle" style="font-size:13.5px">gates run</text>
+              <text class="d-sub" x="488" y="305" text-anchor="middle">track + tags decide which</text>
+              <path class="d-flow--danger" d="M552,290 H586" marker-end="url(#mDanger)"></path>
+
+              <rect class="d-node d-node--danger" x="590" y="264" width="140" height="52" rx="4"></rect>
+              <text class="d-label" x="660" y="288" text-anchor="middle" style="fill:var(--danger);font-size:13.5px">one gate fails</text>
+              <text class="d-sub" x="660" y="305" text-anchor="middle">endpoint has no test</text>
+              <path class="d-flow--danger" d="M730,290 H764" marker-end="url(#mDanger)"></path>
+
+              <rect class="d-node" x="768" y="264" width="112" height="52" rx="4"></rect>
+              <text class="d-mono" x="824" y="295" text-anchor="middle" style="fill:var(--ink-2)">blocked</text>
+              <path class="d-flow--success" d="M880,290 H916" marker-end="url(#mSuccess)"></path>
+
+              <rect class="d-node d-node--success" x="920" y="258" width="306" height="64" rx="4"></rect>
+              <text class="d-label" x="1073" y="284" text-anchor="middle" style="fill:var(--success)">The author finds it</text>
+              <text class="d-sub" x="1073" y="304" text-anchor="middle">before review, with synthetic data</text>
+            </g>
+
+            <line class="d-rule" x1="14" y1="200" x2="14" y2="200"></line>
+          </svg>
+        </div>
+        <p class="takeaway">Nothing about the agent changed between those two lanes. The difference is entirely in what the repository refused to accept.</p>
+      </section>
+
+      <section class="slide" data-title="Where it breaks" data-act="I · The bottleneck moved">
+        <p class="eyebrow">Observed, not imagined</p>
+        <h2>Four places agent-built work goes wrong — and how each one hides.</h2>
+        <table class="ledger">
+          <thead>
+            <tr>
+              <th style="width:20%">The moment</th>
+              <th style="width:40%">What it looks like at the time</th>
+              <th class="is-without" style="width:40%">Why nobody catches it</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="moment">Scope drifts</td>
+              <td>A slightly larger problem than the one you asked about.</td>
+              <td class="is-without">The diff is coherent. Nothing in it is <em>wrong</em> — it just isn't what was approved.</td>
+            </tr>
+            <tr>
+              <td class="moment">Tests assert nothing</td>
+              <td>Coverage rises. Everything passes.</td>
+              <td class="is-without">Written after the code, from the code. They pass against the bug too.</td>
+            </tr>
+            <tr>
+              <td class="moment">"Checks passed"</td>
+              <td>A tidy pass/fail table in the PR body.</td>
+              <td class="is-without">A sentence an agent wrote looks identical to a result a runner produced.</td>
+            </tr>
+            <tr>
+              <td class="moment">UI arrives late</td>
+              <td>It works. Then somebody finally sees it.</td>
+              <td class="is-without">First look lands after implementation, when changing it is expensive.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="takeaway takeaway--danger">Every one of these passes a normal pipeline. That is the problem — not agent capability.</p>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ACT II — Proportional process
+           ═══════════════════════════════════════════════════════════ -->
+
+      <section class="slide slide--act" data-title="Act I" data-act="II · Proportional process">
+        <p class="act-num">I</p>
+        <p class="eyebrow">Act one</p>
+        <h2>Process proportional to risk.</h2>
+        <p class="subtitle">A typo and a schema migration should not cost the same to ship. Most frameworks fail here — by charging full ceremony for everything, until the team routes around all of it.</p>
+      </section>
+
+      <section class="slide" data-title="Track triage" data-act="II · Proportional process">
+        <p class="eyebrow">Classification</p>
+        <h2>Two questions decide how much process a change earns.</h2>
+        <div class="dgm dgm--tight">
+          <svg viewBox="0 0 1140 400" role="img" aria-label="Decision tree: if a change touches schema, authorization, secrets, infrastructure, MCP writes or release config it is Track C; otherwise if a user can observe the behaviour change it is Track B; otherwise Track A.">
+            <rect class="d-node" x="30" y="14" width="250" height="48" rx="4"></rect>
+            <text class="d-label" x="155" y="44" text-anchor="middle">A change arrives</text>
+            <path class="d-flow" d="M155,62 V92" marker-end="url(#mLine)"></path>
+
+            <!-- Q1 -->
+            <rect class="d-node d-node--accent" x="30" y="96" width="480" height="70" rx="4"></rect>
+            <text class="d-label" x="52" y="126" style="font-size:14px">Touches schema, authorization, secrets,</text>
+            <text class="d-label" x="52" y="147" style="font-size:14px">infrastructure, MCP writes, or release config?</text>
+            <path class="d-flow--danger" d="M510,131 H614" marker-end="url(#mDanger)"></path>
+            <text class="d-cap d-cap--danger" x="540" y="122">yes</text>
+
+            <rect class="d-node d-node--danger" x="618" y="103" width="492" height="56" rx="4"></rect>
+            <text class="d-label" x="640" y="127" style="fill:var(--danger)">Track C</text>
+            <text class="d-sub" x="640" y="146">Everything in Track B, plus a named specialist and production approval</text>
+
+            <path class="d-flow" d="M155,166 V212" marker-end="url(#mLine)"></path>
+            <text class="d-cap" x="168" y="192">no</text>
+
+            <!-- Q2 -->
+            <rect class="d-node d-node--accent" x="30" y="216" width="480" height="56" rx="4"></rect>
+            <text class="d-label" x="52" y="250" style="font-size:14px">Can a user observe the behaviour change?</text>
+            <path class="d-flow--accent" d="M510,244 H614" marker-end="url(#mAccent)"></path>
+            <text class="d-cap d-cap--accent" x="540" y="235">yes</text>
+
+            <rect class="d-node d-node--accent" x="618" y="216" width="492" height="56" rx="4"></rect>
+            <text class="d-label" x="640" y="240" style="fill:var(--accent-ink)">Track B — the default</text>
+            <text class="d-sub" x="640" y="259">Spec, plan, PR review, release note. Three human approvals.</text>
+
+            <path class="d-flow" d="M155,272 V318" marker-end="url(#mLine)"></path>
+            <text class="d-cap" x="168" y="298">no</text>
+
+            <rect class="d-node" x="30" y="322" width="480" height="56" rx="4"></rect>
+            <text class="d-label" x="52" y="346">Track A</text>
+            <text class="d-sub" x="52" y="365">Docs, formatting, comments. One PR approval, nothing else.</text>
+
+            <text class="d-cap" x="618" y="348">Tags never lower a track.</text>
+            <text class="d-sub" x="618" y="370">A change can carry several; the evidence they require is cumulative.</text>
+          </svg>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Lifecycle" data-act="II · Proportional process">
+        <p class="eyebrow">The lifecycle</p>
+        <h2>Eight steps forward. Five places a human decides. Three ways back.</h2>
+        <div class="dgm dgm--tall">
+          <svg viewBox="0 0 1400 400" role="img" aria-label="Lifecycle diagram: spec, design, plan, build, validate, preview, review, ship. Human approval gates sit above spec, design, plan, review and ship. Dashed return paths run from review back to build, preview back to design, and plan back to spec.">
+            <text class="d-cap d-cap--accent" x="18" y="30">Human approval gates — the change stops here until a person decides</text>
+
+            <!-- gates -->
+            <g>
+              <rect class="d-node--gate" x="18" y="58" width="164" height="42" rx="3"></rect>
+              <text class="d-on-gate" x="100" y="75" text-anchor="middle">SPEC</text>
+              <text class="d-on-gate" x="100" y="90" text-anchor="middle" style="font-weight:500;opacity:.85">approved</text>
+              <path class="d-flow--accent" style="stroke-dasharray:2 3" d="M100,100 V166"></path>
+
+              <rect class="d-node--gate" x="188" y="58" width="164" height="42" rx="3"></rect>
+              <text class="d-on-gate" x="270" y="75" text-anchor="middle">DESIGN + MOCKUP</text>
+              <text class="d-on-gate" x="270" y="90" text-anchor="middle" style="font-weight:500;opacity:.85">approved</text>
+              <path class="d-flow--accent" style="stroke-dasharray:2 3" d="M270,100 V166"></path>
+
+              <rect class="d-node--gate" x="358" y="58" width="164" height="42" rx="3"></rect>
+              <text class="d-on-gate" x="440" y="75" text-anchor="middle">PLAN</text>
+              <text class="d-on-gate" x="440" y="90" text-anchor="middle" style="font-weight:500;opacity:.85">approved</text>
+              <path class="d-flow--accent" style="stroke-dasharray:2 3" d="M440,100 V166"></path>
+
+              <rect class="d-node--gate" x="1038" y="58" width="164" height="42" rx="3"></rect>
+              <text class="d-on-gate" x="1120" y="75" text-anchor="middle">AI REVIEW, THEN</text>
+              <text class="d-on-gate" x="1120" y="90" text-anchor="middle" style="font-weight:500;opacity:.85">human approval</text>
+              <path class="d-flow--accent" style="stroke-dasharray:2 3" d="M1120,100 V166"></path>
+
+              <rect class="d-node--gate" x="1208" y="58" width="164" height="42" rx="3"></rect>
+              <text class="d-on-gate" x="1290" y="75" text-anchor="middle">PRODUCTION</text>
+              <text class="d-on-gate" x="1290" y="90" text-anchor="middle" style="font-weight:500;opacity:.85">approved</text>
+              <path class="d-flow--accent" style="stroke-dasharray:2 3" d="M1290,100 V166"></path>
+            </g>
+
+            <!-- commands -->
+            <g>
+              <rect class="d-node d-node--accent" x="30" y="170" width="140" height="56" rx="4"></rect>
+              <text class="d-mono" x="100" y="204" text-anchor="middle">spec</text>
+              <path class="d-flow" d="M170,198 H192" marker-end="url(#mLine)"></path>
+
+              <rect class="d-node d-node--accent" x="200" y="170" width="140" height="56" rx="4"></rect>
+              <text class="d-mono" x="270" y="204" text-anchor="middle">design</text>
+              <path class="d-flow" d="M340,198 H362" marker-end="url(#mLine)"></path>
+
+              <rect class="d-node d-node--accent" x="370" y="170" width="140" height="56" rx="4"></rect>
+              <text class="d-mono" x="440" y="204" text-anchor="middle">plan</text>
+              <path class="d-flow" d="M510,198 H532" marker-end="url(#mLine)"></path>
+
+              <rect class="d-node" x="540" y="170" width="140" height="56" rx="4"></rect>
+              <text class="d-mono" x="610" y="204" text-anchor="middle" style="fill:var(--ink-2)">build</text>
+              <path class="d-flow" d="M680,198 H702" marker-end="url(#mLine)"></path>
+
+              <rect class="d-node" x="710" y="170" width="140" height="56" rx="4"></rect>
+              <text class="d-mono" x="780" y="204" text-anchor="middle" style="fill:var(--ink-2)">validate</text>
+              <path class="d-flow" d="M850,198 H872" marker-end="url(#mLine)"></path>
+
+              <rect class="d-node" x="880" y="170" width="140" height="56" rx="4"></rect>
+              <text class="d-mono" x="950" y="204" text-anchor="middle" style="fill:var(--ink-2)">preview</text>
+              <path class="d-flow" d="M1020,198 H1042" marker-end="url(#mLine)"></path>
+
+              <rect class="d-node d-node--accent" x="1050" y="170" width="140" height="56" rx="4"></rect>
+              <text class="d-mono" x="1120" y="204" text-anchor="middle">review</text>
+              <path class="d-flow" d="M1190,198 H1212" marker-end="url(#mLine)"></path>
+
+              <rect class="d-node d-node--accent" x="1220" y="170" width="140" height="56" rx="4"></rect>
+              <text class="d-mono" x="1290" y="204" text-anchor="middle">ship</text>
+            </g>
+
+            <!-- loop-backs -->
+            <path class="d-flow--danger" d="M1120,226 C1120,262 610,262 610,232" marker-end="url(#mDanger)"></path>
+            <rect x="800" y="237" width="130" height="16" fill="var(--paper)"></rect>
+            <text class="d-cap d-cap--danger" x="865" y="249" text-anchor="middle">findings → rebuild</text>
+
+            <path class="d-flow--danger" d="M950,226 C950,300 270,300 270,232" marker-end="url(#mDanger)"></path>
+            <rect x="505" y="265" width="210" height="18" fill="var(--paper)"></rect>
+            <text class="d-cap d-cap--danger" x="610" y="278" text-anchor="middle">scope changed → redesign</text>
+
+            <path class="d-flow--danger" d="M440,226 C440,338 100,338 100,232" marker-end="url(#mDanger)"></path>
+            <rect x="168" y="293" width="204" height="18" fill="var(--paper)"></rect>
+            <text class="d-cap d-cap--danger" x="270" y="306" text-anchor="middle">wrong track → reclassify</text>
+
+            <text class="d-sub" x="18" y="382">Solid arrows are progress. Dashed arrows are the framework refusing to let the change continue — that is the feature, not the exception.</text>
+          </svg>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Human gates" data-act="II · Proportional process">
+        <p class="eyebrow">Human control</p>
+        <h2>Agents never approve their own work.</h2>
+        <div class="rows">
+          <div class="is-human"><strong>Spec</strong><span>A person owns the problem, the scope, the non-goals, and the track. Ambiguity is <em>not</em> authorization to build.</span></div>
+          <div class="is-human"><strong>Design</strong><span>Flow, states, and a clickable mockup — approved <strong>before planning starts</strong>, when changing direction is still cheap.</span></div>
+          <div class="is-human"><strong>Plan</strong><span>Files, approach, assumptions, and the test that will prove each acceptance criterion. No code until this is approved.</span></div>
+          <div class="is-human"><strong>Pull request</strong><span>AI review runs first and publishes findings; P0 and P1 are fixed or explicitly accepted. <strong>Then</strong> a human approves. Never the other way round.</span></div>
+          <div class="is-human"><strong>Specialist</strong><span>Track C only. A named person accountable for the schema, the authorization model, or the infrastructure being changed.</span></div>
+          <div class="is-human"><strong>Production</strong><span>Release readiness, rollback path, and who is watching after the deploy.</span></div>
+        </div>
+        <p class="takeaway">The AI-review-before-human-approval ordering is deliberate. A reviewer who reads the machine's findings first asks better questions than one who reads the diff cold.</p>
+      </section>
+
+      <section class="slide" data-title="Contracts" data-act="II · Proportional process">
+        <p class="eyebrow">Command contracts</p>
+        <h2>Eight prompt contracts, portable across any agent.</h2>
+        <div class="cmds">
+          <div class="gated"><strong>spec</strong><span>Idea becomes classified intent. Picks the track, applies the risk tags.</span><em class="g">Human gate</em></div>
+          <div class="gated"><strong>design</strong><span>Throwaway runnable mockup, approved before any planning.</span><em class="g">Human gate</em></div>
+          <div class="gated"><strong>plan</strong><span>Approved intent mapped onto real files, tests, and assumptions.</span><em class="g">Human gate</em></div>
+          <div><strong>build</strong><span>Implement only what was approved. Every new test must fail first.</span></div>
+          <div><strong>validate</strong><span>Run the gates the track and tags require. Emit evidence.</span></div>
+          <div><strong>preview</strong><span>The real implementation, on an isolated surface, with controlled data.</span></div>
+          <div class="gated"><strong>review</strong><span>Diff, evidence, and risk. Findings ranked P0–P3 against file and line.</span><em class="g">Human gate</em></div>
+          <div class="gated"><strong>ship</strong><span>Release notes and durable memory. Never merges or deploys by itself.</span><em class="g">Human gate</em></div>
+        </div>
+        <p class="takeaway">These are Markdown contracts, not tooling. The same eight work in Claude Code, Codex, Cursor, or a plain chat window — because none of them depend on a vendor feature.</p>
+      </section>
+
+      <section class="slide" data-title="Anatomy" data-act="II · Proportional process">
+        <p class="eyebrow">Anatomy of a contract</p>
+        <h2>Every contract answers the same four questions.</h2>
+        <div class="split">
+          <div>
+            <div class="rows">
+              <div><strong>Do this</strong><span>The bounded job. <code>build</code> implements the approved plan and nothing adjacent to it.</span></div>
+              <div class="is-stop"><strong>Stop when</strong><span>Named conditions that end the turn: missing approval, scope growth, track escalation, three failures on one check.</span></div>
+              <div class="is-human"><strong>A human owns</strong><span>Which decision is explicitly not the agent's to make.</span></div>
+              <div><strong>Done means</strong><span>A checklist specific enough to fail. Not "code is complete".</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="artifact">
+              <div class="artifact-bar">commands/build.md — completion criteria</div>
+              <pre><span class="cm">- Plan approval confirmed before implementation began.</span>
+- Every new test fails against pre-change code.
+- <span class="ky">api</span>: every changed endpoint is exercised
+  through the real router, denied paths included;
+  <span class="ky">check-api-coverage.sh</span> passes.
+- <span class="ky">ui</span>: no raw colour, size, or spacing value
+  outside the token layer.
+- <span class="ky">database</span>: the data model document matches
+  the schema as built.
+- Track B/C: a changelog entry exists.
+- <span class="no">No check result is asserted that a runner
+  did not produce.</span></pre>
+            </div>
+          </div>
+        </div>
+        <p class="takeaway">This one slide replaced eight in the previous version of this deck. If you have seen one contract, the shape of the other seven is predictable — which is the point of a contract.</p>
+      </section>
+
+      <section class="slide" data-title="Stopping" data-act="II · Proportional process">
+        <p class="eyebrow">Guardrails</p>
+        <h2>Stopping with a clear question is a successful outcome.</h2>
+        <div class="cards cards--4">
+          <article><h3>No unapproved scope</h3><p>Build refuses to start without an approved plan — and a design too, when the change touches UI.</p></article>
+          <article><h3>No invented evidence</h3><p>An agent never states that a check passed unless a runner produced that result.</p></article>
+          <article><h3>No quiet escalation</h3><p>Schema, authorization, secrets, or infrastructure reclassify the change upward and say so.</p></article>
+          <article><h3>No irreversible act</h3><p>Destructive commands, external messages, merges, and deploys all need explicit authorization.</p></article>
+        </div>
+        <div class="callout callout--warn" style="margin-top:1.4rem">
+          <p><strong>The failure this prevents is specific.</strong> An agent that cannot stop will guess — and a plausible guess, written confidently, is far more expensive than a question.</p>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ACT III — Evidence, not confidence
+           ═══════════════════════════════════════════════════════════ -->
+
+      <section class="slide slide--act" data-title="Act II" data-act="III · Evidence">
+        <p class="act-num">II</p>
+        <p class="eyebrow">Act two</p>
+        <h2>Evidence, not confidence.</h2>
+        <p class="subtitle">This is the load-bearing idea. Everything else in the framework is scaffolding around it.</p>
+      </section>
+
+      <section class="slide slide--statement" data-title="A claim" data-act="III · Evidence">
+        <p class="eyebrow eyebrow--danger">The core confusion</p>
+        <p class="statement">"All tests passed" is a <em>sentence</em>. It is not a result.</p>
+        <p class="fine">Written in a PR body by a model optimising to sound finished, it is typographically identical to a result a runner produced. Reviewers cannot tell the difference — so the framework does not ask them to.</p>
+      </section>
+
+      <section class="slide" data-title="Corroboration" data-act="III · Evidence">
+        <p class="eyebrow">The corroboration rule</p>
+        <h2>An agent may write evidence. It may not satisfy a gate.</h2>
+        <div class="dgm">
+          <svg viewBox="0 0 1200 380" role="img" aria-label="Three lanes. Agent-authored evidence is rejected. CI-authored evidence satisfies the gate. A waiver passes conditionally and expires.">
+            <!-- lane 1 -->
+            <rect class="d-node" x="14" y="26" width="210" height="62" rx="4"></rect>
+            <text class="d-label" x="34" y="52">An agent runs</text>
+            <text class="d-label" x="34" y="71">the checks</text>
+            <path class="d-flow" d="M224,57 H262" marker-end="url(#mLine)"></path>
+
+            <rect class="d-node" x="266" y="26" width="304" height="62" rx="4"></rect>
+            <text class="d-mono" x="286" y="52" style="fill:var(--ink-2)">evidence.json</text>
+            <text class="d-mono" x="286" y="72" style="fill:var(--danger)">"runner": "agent"</text>
+            <path class="d-flow--danger" d="M570,57 H626" marker-end="url(#mDanger)"></path>
+
+            <rect class="d-node d-node--danger" x="630" y="26" width="120" height="62" rx="4"></rect>
+            <text class="d-label" x="690" y="63" text-anchor="middle" style="fill:var(--danger);font-size:26px">✕</text>
+            <path class="d-flow--danger" d="M750,57 H788" marker-end="url(#mDanger)"></path>
+
+            <rect class="d-node d-node--danger" x="792" y="26" width="394" height="62" rx="4"></rect>
+            <text class="d-label" x="812" y="52" style="fill:var(--danger)">REJECTED</text>
+            <text class="d-sub" x="812" y="72">Re-run it in CI. A claim never counts, however honest.</text>
+
+            <!-- lane 2 -->
+            <rect class="d-node" x="14" y="150" width="210" height="62" rx="4"></rect>
+            <text class="d-label" x="34" y="176">CI runs</text>
+            <text class="d-label" x="34" y="195">the same checks</text>
+            <path class="d-flow" d="M224,181 H262" marker-end="url(#mLine)"></path>
+
+            <rect class="d-node" x="266" y="150" width="304" height="62" rx="4"></rect>
+            <text class="d-mono" x="286" y="176" style="fill:var(--ink-2)">evidence.json</text>
+            <text class="d-mono" x="286" y="196" style="fill:var(--success)">"runner": "ci"</text>
+            <path class="d-flow--success" d="M570,181 H626" marker-end="url(#mSuccess)"></path>
+
+            <rect class="d-node d-node--success" x="630" y="150" width="120" height="62" rx="4"></rect>
+            <text class="d-label" x="690" y="187" text-anchor="middle" style="fill:var(--success);font-size:26px">✓</text>
+            <path class="d-flow--success" d="M750,181 H788" marker-end="url(#mSuccess)"></path>
+
+            <rect class="d-node d-node--success" x="792" y="150" width="394" height="62" rx="4"></rect>
+            <text class="d-label" x="812" y="176" style="fill:var(--success)">SATISFIES THE GATE</text>
+            <text class="d-sub" x="812" y="196">Exact command, process exit code, retrievable log.</text>
+
+            <!-- lane 3 -->
+            <rect class="d-node" x="14" y="274" width="210" height="62" rx="4"></rect>
+            <text class="d-label" x="34" y="300">A gate fails and</text>
+            <text class="d-label" x="34" y="319">must be bypassed</text>
+            <path class="d-flow" d="M224,305 H262" marker-end="url(#mLine)"></path>
+
+            <rect class="d-node d-node--warn" x="266" y="274" width="304" height="62" rx="4"></rect>
+            <text class="d-label" x="286" y="299" style="fill:var(--warn);font-size:13.5px">Waiver</text>
+            <text class="d-sub" x="286" y="319">approver · reason · expiry · follow-up ticket</text>
+            <path class="d-flow--warn" d="M570,305 H626" marker-end="url(#mWarn)"></path>
+
+            <rect class="d-node d-node--warn" x="630" y="274" width="120" height="62" rx="4"></rect>
+            <text class="d-label" x="690" y="313" text-anchor="middle" style="fill:var(--warn);font-size:24px">!</text>
+            <path class="d-flow--warn" d="M750,305 H788" marker-end="url(#mWarn)"></path>
+
+            <rect class="d-node d-node--warn" x="792" y="274" width="394" height="62" rx="4"></rect>
+            <text class="d-label" x="812" y="300" style="fill:var(--warn)">CONDITIONAL — AND IT EXPIRES</text>
+            <text class="d-sub" x="812" y="320">Past the expiry date the build fails on its own.</text>
+          </svg>
+        </div>
+        <p class="takeaway">The third lane is what stops this being theatre. Every real team needs a way past a gate; without an expiry, that way becomes the new default within a quarter.</p>
+      </section>
+
+      <section class="slide" data-title="Gate states" data-act="III · Evidence">
+        <p class="eyebrow">Fail closed</p>
+        <h2>A missing result is not a pass.</h2>
+        <div class="dgm dgm--tight">
+          <svg viewBox="0 0 1020 330" role="img" aria-label="Four gate states: pass, fail, not run which is treated as a failure, and waived which expires back into failure.">
+            <rect class="d-node d-node--success" x="20" y="34" width="220" height="88" rx="4"></rect>
+            <text class="d-mono" x="42" y="66" style="fill:var(--success)">pass</text>
+            <text class="d-sub" x="42" y="90">A runner produced</text>
+            <text class="d-sub" x="42" y="108">exit code 0.</text>
+
+            <rect class="d-node d-node--danger" x="264" y="34" width="220" height="88" rx="4"></rect>
+            <text class="d-mono" x="286" y="66" style="fill:var(--danger)">fail</text>
+            <text class="d-sub" x="286" y="90">Non-zero exit.</text>
+            <text class="d-sub" x="286" y="108">Merge is blocked.</text>
+
+            <rect class="d-node d-node--danger" x="508" y="34" width="220" height="88" rx="4"></rect>
+            <text class="d-mono" x="530" y="66" style="fill:var(--danger)">not_run</text>
+            <text class="d-sub" x="530" y="90">Treated exactly like</text>
+            <text class="d-sub" x="530" y="108">a failure.</text>
+
+            <rect class="d-node d-node--warn" x="752" y="34" width="220" height="88" rx="4"></rect>
+            <text class="d-mono" x="774" y="66" style="fill:var(--warn)">waived</text>
+            <text class="d-sub" x="774" y="90">Named approver,</text>
+            <text class="d-sub" x="774" y="108">dated expiry.</text>
+
+            <path class="d-flow--warn" d="M374,122 C374,196 862,196 862,126" marker-end="url(#mWarn)"></path>
+            <rect x="524" y="166" width="268" height="19" fill="var(--paper)"></rect>
+            <text class="d-cap d-cap--warn" x="658" y="180" text-anchor="middle">a human waives it, with a reason</text>
+
+            <path class="d-flow--danger" d="M862,122 C862,254 374,254 374,126" marker-end="url(#mDanger)"></path>
+            <rect x="510" y="224" width="216" height="19" fill="var(--paper)"></rect>
+            <text class="d-cap d-cap--danger" x="618" y="238" text-anchor="middle">the expiry date passes</text>
+
+            <line class="d-rule" x1="20" y1="286" x2="972" y2="286"></line>
+            <text class="d-label" x="20" y="314" style="font-size:14px">An unset required command is a failing gate — never a skipped one.</text>
+          </svg>
+        </div>
+      </section>
+
+      <section class="slide" data-title="The artifact" data-act="III · Evidence">
+        <p class="eyebrow">What a gate actually reads</p>
+        <h2>The evidence artifact is boring on purpose.</h2>
+        <div class="split">
+          <div>
+            <div class="artifact">
+              <div class="artifact-bar">evidence.json — emitted by every run, pass or fail</div>
+              <pre>{
+  <span class="ky">"commit"</span>: "fe8ed83…",
+  <span class="ky">"runner"</span>: <span class="ok">"ci"</span>,
+  <span class="ky">"classification"</span>: {
+    "track": "B", "tags": [<span class="ky">"api"</span>, <span class="ky">"database"</span>]
+  },
+  <span class="ky">"checks"</span>: [
+    { "name": "test",      "exit_code": <span class="ok">0</span> },
+    { "name": "api-tests", "exit_code": <span class="no">1</span> }
+  ],
+  <span class="ky">"gates"</span>: [
+    { "name": "test",        "status": <span class="ok">"pass"</span> },
+    { "name": "api-tests",   "status": <span class="no">"fail"</span> },
+    { "name": "pr-approval", "status": <span class="no">"not_run"</span> }
+  ]
+}</pre>
+            </div>
+          </div>
+          <div>
+            <h3>Why this shape</h3>
+            <p><strong>Exit codes, not adjectives.</strong> There is no field for how confident the agent felt. A process either returned zero or it did not.</p>
+            <p><strong>A failed run is still evidence.</strong> The artifact is written either way. Suppressing it is how a framework ends up trusting prose.</p>
+            <p><strong>Gates humans own are recorded as <code>not_run</code></strong> — never quietly as passing. Automation cannot mark its own homework as reviewed.</p>
+            <div class="callout" style="margin-top:1.1rem">
+              <p>A PR <em>links</em> this run. It does not restate the results in prose — because restating them is exactly where fabrication enters.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Tests" data-act="III · Evidence">
+        <p class="eyebrow">The testing rule</p>
+        <h2>If a test passes before the fix, it is not testing the fix.</h2>
+        <div class="split">
+          <div>
+            <p class="large">Mechanically checkable: stash the change, run the new test, confirm it fails, restore.</p>
+            <p>For a bug fix, the failing test <em>is</em> the reproduction. Writing it first is the only way to know you found the actual bug and not a plausible neighbour of it.</p>
+          </div>
+          <div>
+            <h3>How agent-written tests fail</h3>
+            <table>
+              <tbody>
+                <tr><td class="k">Asserts current behaviour</td><td>Derived from the code, not the requirement. Passes through regressions.</td></tr>
+                <tr><td class="k">Mocks the thing under test</td><td>Still passes if you delete the implementation.</td></tr>
+                <tr><td class="k">Tautology</td><td><code>expect(result).toBeDefined()</code></td></tr>
+                <tr><td class="k">Happy path only</td><td>Error and denied cases are where defects live.</td></tr>
+                <tr><td class="k">Loosened assertion</td><td>The most dangerous edit, and the hardest to spot.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p class="takeaway">Authorization tests of the <strong>denied</strong> path are required for <code>api</code> and <code>security</code>. Broken access control is invisible to a suite that only ever tests an authorized user.</p>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ACT IV — Where it earns its keep (with / without)
+           ═══════════════════════════════════════════════════════════ -->
+
+      <section class="slide slide--act" data-title="Act III" data-act="IV · With / without">
+        <p class="act-num">III</p>
+        <p class="eyebrow">Act three</p>
+        <h2>Where it earns its keep.</h2>
+        <p class="subtitle">Four real gaps. Each one was found by building an application with this framework and then reading what it had actually produced — not by imagining what might go wrong.</p>
+      </section>
+
+      <section class="slide" data-title="Untested endpoints" data-act="IV · With / without">
+        <p class="eyebrow eyebrow--danger">Gap one</p>
+        <h2>The API tag said "authorization tests". Every gate was green.</h2>
+        <div class="versus">
+          <div class="vs-panel vs-panel--without">
+            <div class="vs-head"><h3>Without the gate</h3><span class="tag">the rule was prose</span></div>
+            <ol class="vs-steps">
+              <li>The agent adds a set of routes and writes tests for the pure helper functions those routes call.</li>
+              <li>The tests are real, well-named, and pass. Coverage goes up.</li>
+              <li>Not one of them makes an HTTP request. The router is never exercised.</li>
+            </ol>
+            <p class="vs-out">Every endpoint ships uncovered, and the pipeline reports success.</p>
+          </div>
+          <div class="vs-panel vs-panel--with">
+            <div class="vs-head"><h3>With the gate</h3><span class="tag">check-api-coverage.sh</span></div>
+            <ol class="vs-steps">
+              <li>Routes are enumerated from the manifest and matched against test bodies.</li>
+              <li>A test that <strong>names</strong> the endpoint but makes no request fails too — that is the loophole, closed.</li>
+              <li>Unconfigured means failing, not skipping.</li>
+            </ol>
+            <p class="vs-out">The build stops and names each uncovered endpoint.</p>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:1.2rem">
+          <p><strong>The honest limit, stated in the standard:</strong> the check proves a test names and requests the endpoint. It cannot prove the test asserts anything meaningful. That is the reviewer's job — but the absent test is the failure that actually happened.</p>
+        </div>
+      </section>
+
+      <section class="slide" data-title="UI drift" data-act="IV · With / without">
+        <p class="eyebrow eyebrow--danger">Gap two</p>
+        <h2>One feature ended up with three visual languages.</h2>
+        <div class="dgm dgm--tight">
+          <svg viewBox="0 0 1200 300" role="img" aria-label="Without a token layer, the mockup, the application stylesheet and the Tailwind config each define their own colours. With one, a single token file feeds both the application and the mockup.">
+            <text class="d-cap d-cap--danger" x="20" y="20">Without a token layer — three sources of truth</text>
+
+            <rect class="d-node d-node--danger" x="20" y="40" width="250" height="60" rx="4"></rect>
+            <text class="d-mono" x="38" y="66" style="fill:var(--danger);font-size:13px">mockup.css</text>
+            <rect x="38" y="76" width="22" height="12" rx="2" fill="#2f6fd0"></rect>
+            <rect x="64" y="76" width="22" height="12" rx="2" fill="#8a8f98"></rect>
+            <rect x="90" y="76" width="22" height="12" rx="2" fill="#c94f3d"></rect>
+            <text class="d-sub" x="122" y="87">hand-written</text>
+
+            <rect class="d-node d-node--danger" x="20" y="115" width="250" height="60" rx="4"></rect>
+            <text class="d-mono" x="38" y="141" style="fill:var(--danger);font-size:13px">main.css</text>
+            <rect x="38" y="151" width="22" height="12" rx="2" fill="#1f5fc4"></rect>
+            <rect x="64" y="151" width="22" height="12" rx="2" fill="#767d87"></rect>
+            <rect x="90" y="151" width="22" height="12" rx="2" fill="#b8452f"></rect>
+            <text class="d-sub" x="122" y="162">CSS variables</text>
+
+            <rect class="d-node d-node--danger" x="20" y="190" width="250" height="60" rx="4"></rect>
+            <text class="d-mono" x="38" y="216" style="fill:var(--danger);font-size:13px">tailwind.config.ts</text>
+            <rect x="38" y="226" width="22" height="12" rx="2" fill="#3b82f6"></rect>
+            <rect x="64" y="226" width="22" height="12" rx="2" fill="#9ca3af"></rect>
+            <rect x="90" y="226" width="22" height="12" rx="2" fill="#ef4444"></rect>
+            <text class="d-sub" x="122" y="237">framework defaults</text>
+
+            <text class="d-cap d-cap--danger" x="20" y="278">Nobody is wrong. Nothing matches.</text>
+
+            <line class="d-rule" x1="600" y1="10" x2="600" y2="290"></line>
+
+            <text class="d-cap d-cap--success" x="640" y="20">With a token layer — one source, two consumers</text>
+
+            <rect class="d-node d-node--success" x="770" y="46" width="300" height="72" rx="4"></rect>
+            <text class="d-mono" x="790" y="72" style="fill:var(--success);font-size:13px">css/tokens.css</text>
+            <rect x="790" y="84" width="26" height="14" rx="2" fill="#0d6b63"></rect>
+            <rect x="820" y="84" width="26" height="14" rx="2" fill="#6a7280"></rect>
+            <rect x="850" y="84" width="26" height="14" rx="2" fill="#a5321f"></rect>
+            <text class="d-sub" x="886" y="96">semantic roles</text>
+
+            <path class="d-flow--success" d="M860,118 C860,160 760,150 760,192" marker-end="url(#mSuccess)"></path>
+            <path class="d-flow--success" d="M980,118 C980,160 1000,150 1000,192" marker-end="url(#mSuccess)"></path>
+
+            <rect class="d-node d-node--success" x="650" y="196" width="220" height="60" rx="4"></rect>
+            <text class="d-label" x="670" y="222" style="fill:var(--success);font-size:14px">The application</text>
+            <text class="d-sub" x="670" y="241">Tailwind reads the tokens</text>
+
+            <rect class="d-node d-node--success" x="890" y="196" width="220" height="60" rx="4"></rect>
+            <text class="d-label" x="910" y="222" style="fill:var(--success);font-size:14px">The mockup</text>
+            <text class="d-sub" x="910" y="241">reads the same file</text>
+
+            <text class="d-cap d-cap--success" x="640" y="286">The prototype cannot drift, because there is nothing to drift from.</text>
+          </svg>
+        </div>
+        <p class="takeaway">The first UI change decides the palette, type scale, and spacing rhythm for every feature after it — whether anyone intends it to or not. The framework now makes that a decision instead of an accident.</p>
+      </section>
+
+      <section class="slide" data-title="Improvised schema" data-act="IV · With / without">
+        <p class="eyebrow eyebrow--danger">Gap three</p>
+        <h2>The architecture template claimed to cover the data model. It had none.</h2>
+        <div class="trees">
+          <div class="tree tree--before">
+            <h3>What the template actually asked for</h3>
+            <pre><span class="dim">## Data flow</span>
+
+Requests arrive at the API layer, which
+validates input and delegates to the
+service layer. The service layer owns
+business rules and persists through the
+repository.
+
+<span class="fw">…and that was the whole section.</span></pre>
+            <p class="fine" style="margin-top:0.9rem">Required whenever "a data model changes" — with nowhere to put a table, a column, a key, or a classification. The agent improvised an ERD anyway. That is luck, not a contract.</p>
+          </div>
+          <div class="tree tree--after">
+            <h3>What it asks for now</h3>
+            <pre><span class="dim">## Data dictionary — transactions</span>
+
+column      type      null  <span class="own">class</span>     …
+──────────  ────────  ────  ────────
+id          uuid      no    internal
+user_id     uuid      no    <span class="own">pii</span>
+amount      numeric   no    <span class="own">sensitive</span>
+note        text      yes   <span class="own">pii</span>
+
+<span class="dim">## Indexes — with the query each serves</span>
+<span class="dim">## Authorization — rows a test can assert</span>
+<span class="dim">## Retention and erasure path</span></pre>
+            <p class="fine" style="margin-top:0.9rem">Plus a crow's-foot ERD. An unclassified column defaults to <strong>sensitive</strong> — deliberately the inconvenient default, so leaving it blank costs more than filling it in.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="The leak" data-act="IV · With / without">
+        <p class="eyebrow eyebrow--danger">Gap four</p>
+        <h2>The green build that ships a data leak.</h2>
+        <div class="versus">
+          <div class="vs-panel vs-panel--without">
+            <div class="vs-head"><h3>Happy-path coverage only</h3><span class="tag">all tests pass</span></div>
+            <div class="artifact" style="margin-bottom:0.9rem">
+              <pre><span class="cm">// the UI masks these fields…</span>
+function serialize(row) {
+  return { ...row };  <span class="no">// …the API does not</span>
+}</pre>
+            </div>
+            <ol class="vs-steps">
+              <li>Every test authenticates as a user who is allowed to see the record.</li>
+              <li>The response is asserted to contain the fields the UI shows.</li>
+              <li>Nothing asserts what it must <em>not</em> contain.</li>
+            </ol>
+            <p class="vs-out">Masked fields ship in the payload. Broken access control is invisible to this suite.</p>
+          </div>
+          <div class="vs-panel vs-panel--with">
+            <div class="vs-head"><h3>Denied paths required</h3><span class="tag">api + security tags</span></div>
+            <ol class="vs-steps">
+              <li>Unauthenticated, forbidden-per-object, not-found, and cross-tenant cases are each required, per endpoint.</li>
+              <li>The test matrix records any case marked <code>n/a</code> — with the reason, visible to the reviewer.</li>
+              <li>AI review reads the diff and the evidence before a human is asked to approve.</li>
+            </ol>
+            <p class="vs-out">The cross-tenant test fails on the first run, naming the field.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Four moments" data-act="IV · With / without">
+        <p class="eyebrow">The pattern underneath all four</p>
+        <h2>A framework is judged by what happens on a bad day.</h2>
+        <table class="ledger">
+          <thead>
+            <tr>
+              <th style="width:16%">The moment</th>
+              <th class="is-with" style="width:44%">What the framework does</th>
+              <th class="is-without" style="width:40%">What happens without it</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="moment">A spec is rejected</td>
+              <td class="is-with">Approval is recorded explicitly. Ambiguity is not authorization.</td>
+              <td class="is-without">The agent builds a plausible interpretation. Usually a larger one.</td>
+            </tr>
+            <tr>
+              <td class="moment">The track escalates mid-build</td>
+              <td class="is-with">Named assumptions make the violation recognisable. The agent stops.</td>
+              <td class="is-without">A schema change reaches production with no migration plan.</td>
+            </tr>
+            <tr>
+              <td class="moment">A gate fails</td>
+              <td class="is-with">Waivers need approver, reason, expiry, follow-up — and expire on their own.</td>
+              <td class="is-without">The gate is deleted or ignored. The exception becomes standard.</td>
+            </tr>
+            <tr>
+              <td class="moment">Review finds a P0</td>
+              <td class="is-with">Review reads behaviour, not the summary. Findings anchor to file and line.</td>
+              <td class="is-without">The description is believed. It reads well and there is a lot to get through.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="takeaway">Three of those four are about stopping well. A framework that only describes the happy path has nothing to say on the days that matter.</p>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ACT V — One product, four kinds of change
+           ═══════════════════════════════════════════════════════════ -->
+
+      <section class="slide slide--act" data-title="Act IV" data-act="V · Case study">
+        <p class="act-num">IV</p>
+        <p class="eyebrow">Act four</p>
+        <h2>One product. Four kinds of change.</h2>
+        <p class="subtitle">Everything so far has been the shape of the process. This act runs it four times on the same codebase — a feature, three flavours of bug, an architecture change, and a theme — and the four look nothing alike.</p>
+      </section>
+
+      <section class="slide" data-title="The product" data-act="V · Case study">
+        <p class="eyebrow">The case study</p>
+        <h2>Beacon — a partner support portal.</h2>
+        <div class="split">
+          <div>
+            <p class="large">Partners sign in, raise support cases, track status, and pull reports.</p>
+            <p>Nuxt front end, Nitro API under <code>server/api</code>, Postgres behind it. Four developers, two of whom drive agents for most of their output. GitFlow: <code>main</code> is production, <code>develop</code> is continuously deployed to QA, and every change gets its own worktree.</p>
+            <p class="fine">Beacon is a composite — the shape of several real products, not one of them. The four changes that follow are the four that actually arrive in a normal fortnight.</p>
+          </div>
+          <div>
+            <div class="artifact">
+              <div class="artifact-bar">project.yaml — the parts that decide everything downstream</div>
+              <pre><span class="ky">repository</span>:
+  integration_branch: develop
+  production_branch: main
+  qa_branch: develop
+
+<span class="ky">tags</span>:
+  enabled: [ui, api, database, security,
+            infra, dependency, release, docs]
+  preview_required_for: [ui, api, database]
+  <span class="ok">track_c_forced_by</span>: [database, security,
+            mcp-write, infra, release]
+
+<span class="ky">evidence</span>:
+  corroborating_runners: [ci]
+  <span class="no">allow_local_runner: false</span></pre>
+            </div>
+          </div>
+        </div>
+        <p class="takeaway">One file. Nobody argues about process again — they argue about the manifest, which is a much shorter argument and it happens once.</p>
+      </section>
+
+      <section class="slide" data-title="Feature" data-act="V · Case study">
+        <p class="eyebrow">Change one — a feature</p>
+        <h2>"Partners should be able to save a filter on the case list."</h2>
+        <div class="dgm">
+          <svg viewBox="0 0 1280 392" role="img" aria-label="The spec classifies the change as Track B with the ui and api tags. Track B supplies the baseline artifacts; the ui tag adds design, mockup, preview and UI QA sign-off; the api tag adds the API contract, HTTP tests including denied paths, and endpoint coverage.">
+            <text class="d-cap d-cap--accent" x="14" y="16">Classified once, in the spec front matter — nothing downstream re-classifies it</text>
+            <rect class="d-node d-node--accent" x="14" y="26" width="1252" height="40" rx="4"></rect>
+            <text class="d-mono" x="36" y="52" style="font-size:14px">track: B   ·   risk: standard   ·   tags: [ui, api]</text>
+
+            <!-- baseline -->
+            <rect class="d-node" x="14" y="96" width="392" height="230" rx="4"></rect>
+            <text class="d-label" x="36" y="126">Track B — what any feature gets</text>
+            <text class="d-sub" x="36" y="158">Spec, approved before planning starts</text>
+            <text class="d-sub" x="36" y="181">Implementation plan, approved before code</text>
+            <text class="d-sub" x="36" y="204">Branch and worktree off develop</text>
+            <text class="d-sub" x="36" y="227">Every new test fails against pre-change code</text>
+            <text class="d-sub" x="36" y="250">AI review publishes findings on the PR</text>
+            <text class="d-sub" x="36" y="273">One human approval — after AI review</text>
+            <text class="d-sub" x="36" y="296">Changelog entry under [Unreleased]</text>
+
+            <text x="424" y="222" text-anchor="middle" style="font-size:24px;fill:var(--muted);font-family:var(--sans)">+</text>
+
+            <!-- ui -->
+            <rect class="d-node d-node--accent" x="444" y="96" width="392" height="230" rx="4"></rect>
+            <text class="d-mono" x="466" y="126" style="font-size:14px">ui</text>
+            <text class="d-label" x="492" y="126" style="fill:var(--accent-ink);font-size:14px">added</text>
+            <text class="d-sub" x="466" y="158">Design doc: the flow and every state</text>
+            <text class="d-sub" x="466" y="181">A clickable mockup on the real token layer</text>
+            <text class="d-sub" x="466" y="204">UI foundation — on the first ui change only</text>
+            <text class="d-sub" x="466" y="227">Both approved before the plan is written</text>
+            <text class="d-sub" x="466" y="250">A Preview deployment, forced by the tag</text>
+            <text class="d-sub" x="466" y="273">UI QA sign-off against the design, before merge</text>
+
+            <text x="854" y="222" text-anchor="middle" style="font-size:24px;fill:var(--muted);font-family:var(--sans)">+</text>
+
+            <!-- api -->
+            <rect class="d-node d-node--accent" x="874" y="96" width="392" height="230" rx="4"></rect>
+            <text class="d-mono" x="896" y="126" style="font-size:14px">api</text>
+            <text class="d-label" x="928" y="126" style="fill:var(--accent-ink);font-size:14px">added</text>
+            <text class="d-sub" x="896" y="158">API contract with a per-endpoint test matrix</text>
+            <text class="d-sub" x="896" y="181">Tests that request the route over HTTP</text>
+            <text class="d-sub" x="896" y="204">Denied paths: unauthenticated, forbidden,</text>
+            <text class="d-sub" x="896" y="223">and one partner reading another's filters</text>
+            <text class="d-sub" x="896" y="252">check-api-coverage.sh — no route uncovered</text>
+            <text class="d-sub" x="896" y="275">A Preview deployment, forced by the tag</text>
+
+            <text class="d-sub" x="14" y="360">Three human approvals and a UI QA sign-off — and not one of them was chosen on the day. Two words in the spec selected all four.</text>
+          </svg>
+        </div>
+        <p class="takeaway">A feature is where the framework costs the most. It is also the only one of these four changes where every gate is obviously earned — which is why teams that only ever ship features conclude the process is heavy, and stop there.</p>
+      </section>
+
+      <section class="slide" data-title="Bug fixes" data-act="V · Case study">
+        <p class="eyebrow">Change two — a defect</p>
+        <h2>The same bug costs three different amounts. Where you find it decides which.</h2>
+        <div class="dgm">
+          <svg viewBox="0 0 1280 400" role="img" aria-label="Three lanes by where a defect is found. In your own branch it is not a separate change. On the QA environment it becomes a fix branch off develop on Track B. In production it becomes a hotfix branch off main with an incident record and an immediate back-merge.">
+            <!-- lane 1 -->
+            <text class="d-cap d-cap--success" x="14" y="26">Found in your own branch, before the PR</text>
+            <rect class="d-node d-node--success" x="14" y="36" width="212" height="62" rx="4"></rect>
+            <text class="d-label" x="34" y="62" style="fill:var(--success);font-size:14px">You caught it</text>
+            <text class="d-sub" x="34" y="81">while building</text>
+            <path class="d-flow--success" d="M226,67 H262" marker-end="url(#mSuccess)"></path>
+
+            <rect class="d-node" x="266" y="36" width="196" height="62" rx="4"></rect>
+            <text class="d-mono" x="286" y="62" style="fill:var(--ink-2);font-size:13px">feat/412-filters</text>
+            <text class="d-sub" x="286" y="81">the branch you are on</text>
+            <path class="d-flow" d="M462,67 H498" marker-end="url(#mLine)"></path>
+
+            <rect class="d-node" x="502" y="36" width="452" height="62" rx="4"></rect>
+            <text class="d-label" x="522" y="60" style="font-size:14px">Not a change of its own</text>
+            <text class="d-sub" x="522" y="80">Write the failing test, fix it, same PR. No spec, no reclassification.</text>
+            <path class="d-flow--success" d="M954,67 H990" marker-end="url(#mSuccess)"></path>
+
+            <rect class="d-node d-node--success" x="994" y="36" width="272" height="62" rx="4"></rect>
+            <text class="d-label" x="1014" y="60" style="fill:var(--success);font-size:14px">Costs minutes</text>
+            <text class="d-sub" x="1014" y="80">Nobody outside the branch ever knew</text>
+
+            <!-- lane 2 -->
+            <text class="d-cap d-cap--accent" x="14" y="154">Found on the QA environment, after merge to develop</text>
+            <rect class="d-node d-node--accent" x="14" y="164" width="212" height="62" rx="4"></rect>
+            <text class="d-label" x="34" y="190" style="fill:var(--accent-ink);font-size:14px">QA found it</text>
+            <text class="d-sub" x="34" y="209">integrated, not yet released</text>
+            <path class="d-flow--accent" d="M226,195 H262" marker-end="url(#mAccent)"></path>
+
+            <rect class="d-node" x="266" y="164" width="196" height="62" rx="4"></rect>
+            <text class="d-mono" x="286" y="190" style="fill:var(--ink-2);font-size:13px">fix/418-slug</text>
+            <text class="d-sub" x="286" y="209">branched off develop</text>
+            <path class="d-flow" d="M462,195 H498" marker-end="url(#mLine)"></path>
+
+            <rect class="d-node" x="502" y="164" width="452" height="62" rx="4"></rect>
+            <text class="d-label" x="522" y="188" style="font-size:14px">Track B, and the defect report is the spec</text>
+            <text class="d-sub" x="522" y="208">A regression test that fails against develop. Normal PR path, no shortcut.</text>
+            <path class="d-flow--accent" d="M954,195 H990" marker-end="url(#mAccent)"></path>
+
+            <rect class="d-node d-node--accent" x="994" y="164" width="272" height="62" rx="4"></rect>
+            <text class="d-label" x="1014" y="188" style="fill:var(--accent-ink);font-size:14px">develop</text>
+            <text class="d-sub" x="1014" y="208">rides the next release out</text>
+
+            <!-- lane 3 -->
+            <text class="d-cap d-cap--danger" x="14" y="282">Found in production</text>
+            <rect class="d-node d-node--danger" x="14" y="292" width="212" height="62" rx="4"></rect>
+            <text class="d-label" x="34" y="318" style="fill:var(--danger);font-size:14px">A partner found it</text>
+            <text class="d-sub" x="34" y="337">with their own data</text>
+            <path class="d-flow--danger" d="M226,323 H262" marker-end="url(#mDanger)"></path>
+
+            <rect class="d-node d-node--danger" x="266" y="292" width="196" height="62" rx="4"></rect>
+            <text class="d-mono" x="286" y="318" style="fill:var(--danger);font-size:13px">hotfix/421-slug</text>
+            <text class="d-sub" x="286" y="337">branched off main</text>
+            <path class="d-flow--danger" d="M462,323 H498" marker-end="url(#mDanger)"></path>
+
+            <rect class="d-node" x="502" y="292" width="452" height="62" rx="4"></rect>
+            <text class="d-label" x="522" y="316" style="font-size:14px">Shortened path, identical accountability</text>
+            <text class="d-sub" x="522" y="336">Maintainer approval, incident record, verification, rollback, follow-up.</text>
+            <path class="d-flow--danger" d="M954,323 H990" marker-end="url(#mDanger)"></path>
+
+            <rect class="d-node d-node--danger" x="994" y="292" width="272" height="62" rx="4"></rect>
+            <text class="d-label" x="1014" y="316" style="fill:var(--danger);font-size:14px">main, then back to develop</text>
+            <text class="d-sub" x="1014" y="336">the same day, or the fix is lost</text>
+          </svg>
+        </div>
+        <p class="takeaway">Two rules hold across all three lanes. A regression test that fails against the unfixed code is never waived — without it, "fixed" is a claim. And an incident does not lower a track: a hotfix touching schema, authorization, or secrets is still Track C at three in the morning.</p>
+      </section>
+
+      <section class="slide" data-title="Architecture" data-act="V · Case study">
+        <p class="eyebrow">Change three — architecture</p>
+        <h2>"Notifications should come off a queue instead of polling."</h2>
+        <div class="dgm">
+          <svg viewBox="0 0 1240 330" role="img" aria-label="On the left, the notifier changes from polling Postgres every thirty seconds to consuming from a queue the API publishes to. On the right, the infra and dependency tags force Track C, which adds a named specialist, a blast-radius statement and rollback record, an ADR, an architecture update, and production approval at release.">
+            <text class="d-cap" x="14" y="18">What actually changed</text>
+
+            <text class="d-sub" x="14" y="46" style="font-style:italic">today</text>
+            <rect class="d-node" x="14" y="56" width="150" height="52" rx="4"></rect>
+            <text class="d-label" x="89" y="87" text-anchor="middle" style="font-size:13.5px">Case API</text>
+            <path class="d-flow" d="M164,82 H198" marker-end="url(#mLine)"></path>
+            <rect class="d-node" x="202" y="56" width="140" height="52" rx="4"></rect>
+            <text class="d-label" x="272" y="87" text-anchor="middle" style="font-size:13.5px">Postgres</text>
+            <rect class="d-node" x="392" y="56" width="150" height="52" rx="4"></rect>
+            <text class="d-label" x="467" y="87" text-anchor="middle" style="font-size:13.5px">Notifier</text>
+            <path class="d-flow" d="M392,82 H346" marker-end="url(#mLine)"></path>
+            <rect x="346" y="110" width="92" height="16" fill="var(--paper)"></rect>
+            <text class="d-cap" x="350" y="122">polls every 30s</text>
+
+            <text class="d-sub" x="14" y="158" style="font-style:italic">proposed</text>
+            <rect class="d-node d-node--accent" x="14" y="168" width="150" height="52" rx="4"></rect>
+            <text class="d-label" x="89" y="199" text-anchor="middle" style="font-size:13.5px">Case API</text>
+            <path class="d-flow--accent" d="M164,194 H198" marker-end="url(#mAccent)"></path>
+            <rect class="d-node d-node--accent" x="202" y="168" width="140" height="52" rx="4"></rect>
+            <text class="d-label" x="272" y="199" text-anchor="middle" style="font-size:13.5px">Queue</text>
+            <path class="d-flow--accent" d="M342,194 H388" marker-end="url(#mAccent)"></path>
+            <rect class="d-node d-node--accent" x="392" y="168" width="150" height="52" rx="4"></rect>
+            <text class="d-label" x="467" y="199" text-anchor="middle" style="font-size:13.5px">Notifier</text>
+
+            <text class="d-cap d-cap--danger" x="14" y="260">No user sees a difference.</text>
+            <text class="d-sub" x="14" y="286">Which is exactly the danger: it reads like a refactor,</text>
+            <text class="d-sub" x="14" y="306">and a refactor is what someone will call it in the PR title.</text>
+
+            <line class="d-rule" x1="580" y1="10" x2="580" y2="320"></line>
+
+            <text class="d-cap d-cap--accent" x="620" y="18">What the classification did about it</text>
+            <rect class="d-node d-node--danger" x="620" y="30" width="606" height="42" rx="4"></rect>
+            <text class="d-mono" x="640" y="57" style="fill:var(--danger);font-size:13px">infra</text>
+            <text class="d-label" x="686" y="57" style="font-size:13.5px">and</text>
+            <text class="d-mono" x="726" y="57" style="fill:var(--danger);font-size:13px">dependency</text>
+            <text class="d-label" x="826" y="57" style="fill:var(--danger);font-size:13.5px">→ Track C. Not a judgement call.</text>
+
+            <text class="d-label" x="620" y="106" style="font-size:13.5px">A named specialist</text>
+            <text class="d-sub" x="620" y="125">Accountable for the runtime being changed — not whoever is free.</text>
+
+            <text class="d-label" x="620" y="156" style="font-size:13.5px">Blast-radius statement and rollback record</text>
+            <text class="d-sub" x="620" y="175">What breaks if the consumer stops, and how the old path comes back.</text>
+
+            <text class="d-label" x="620" y="206" style="font-size:13.5px">An ADR</text>
+            <text class="d-sub" x="620" y="225">Why a queue, what was rejected, and what would make us revisit it.</text>
+
+            <text class="d-label" x="620" y="256" style="font-size:13.5px">The architecture document, updated</text>
+            <text class="d-sub" x="620" y="275">A boundary moved. That is the trigger, and it is written down.</text>
+
+            <text class="d-label" x="620" y="306" style="font-size:13.5px">Production approval — at release, not at the PR</text>
+          </svg>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Theme change" data-act="V · Case study">
+        <p class="eyebrow">Change four — a UI design update</p>
+        <h2>"New brand palette, and partners want a dark theme."</h2>
+        <div class="dgm">
+          <svg viewBox="0 0 1200 336" role="img" aria-label="A feature change edits one leaf of the design tree and leaves the shared foundation alone. A theme change edits the foundation itself, so every screen inherits it and every screen must be re-verified.">
+            <text class="d-cap" x="14" y="18">A feature change — one leaf</text>
+            <rect class="d-node" x="150" y="36" width="280" height="50" rx="4" style="stroke-dasharray:3 3"></rect>
+            <text class="d-mono" x="290" y="59" text-anchor="middle" style="fill:var(--muted);font-size:12px">ui-foundation.md · tokens.css</text>
+            <text class="d-sub" x="290" y="77" text-anchor="middle">untouched</text>
+
+            <path class="d-flow" style="opacity:.35" d="M290,86 C290,116 100,116 100,144" marker-end="url(#mLine)"></path>
+            <path class="d-flow" style="opacity:.35" d="M290,86 C290,116 276,116 276,144" marker-end="url(#mLine)"></path>
+            <path class="d-flow" style="opacity:.35" d="M290,86 C290,116 452,116 452,144" marker-end="url(#mLine)"></path>
+
+            <rect class="d-node" x="20" y="148" width="160" height="46" rx="4"></rect>
+            <text class="d-sub" x="100" y="176" text-anchor="middle">Case list</text>
+            <rect class="d-node d-node--accent" x="196" y="148" width="160" height="46" rx="4"></rect>
+            <text class="d-label" x="276" y="176" text-anchor="middle" style="fill:var(--accent-ink);font-size:13px">Case detail</text>
+            <rect class="d-node" x="372" y="148" width="160" height="46" rx="4"></rect>
+            <text class="d-sub" x="452" y="176" text-anchor="middle">Reports</text>
+
+            <text class="d-cap d-cap--accent" x="14" y="240">Diff: one screen.</text>
+            <text class="d-cap d-cap--accent" x="14" y="262">Review surface: one screen.</text>
+
+            <line class="d-rule" x1="590" y1="10" x2="590" y2="326"></line>
+
+            <text class="d-cap d-cap--accent" x="620" y="18">A theme change — the root</text>
+            <rect class="d-node d-node--accent" x="756" y="36" width="280" height="50" rx="4"></rect>
+            <text class="d-mono" x="896" y="59" text-anchor="middle" style="fill:var(--accent-ink);font-size:12px">ui-foundation.md · tokens.css</text>
+            <text class="d-sub" x="896" y="77" text-anchor="middle">this is the entire diff</text>
+
+            <path class="d-flow--accent" d="M896,86 C896,116 706,116 706,144" marker-end="url(#mAccent)"></path>
+            <path class="d-flow--accent" d="M896,86 C896,116 882,116 882,144" marker-end="url(#mAccent)"></path>
+            <path class="d-flow--accent" d="M896,86 C896,116 1058,116 1058,144" marker-end="url(#mAccent)"></path>
+
+            <rect class="d-node d-node--accent" x="626" y="148" width="160" height="46" rx="4"></rect>
+            <text class="d-label" x="706" y="176" text-anchor="middle" style="fill:var(--accent-ink);font-size:13px">Case list</text>
+            <rect class="d-node d-node--accent" x="802" y="148" width="160" height="46" rx="4"></rect>
+            <text class="d-label" x="882" y="176" text-anchor="middle" style="fill:var(--accent-ink);font-size:13px">Case detail</text>
+            <rect class="d-node d-node--accent" x="978" y="148" width="160" height="46" rx="4"></rect>
+            <text class="d-label" x="1058" y="176" text-anchor="middle" style="fill:var(--accent-ink);font-size:13px">Reports</text>
+
+            <text class="d-cap d-cap--accent" x="620" y="240">Diff: one file.</text>
+            <text class="d-cap d-cap--danger" x="620" y="262">Review surface: every screen, in both themes.</text>
+            <text class="d-sub" x="620" y="292">This is the only change in the deck where a one-file diff</text>
+            <text class="d-sub" x="620" y="312">obliges you to look at everything it did not touch.</text>
+          </svg>
+        </div>
+        <div class="callout callout--warn" style="margin-top:1rem">
+          <p><strong>This is also where the framework subtracts a step.</strong> The mockup is skippable here — "a colour-token swap with no layout impact" is a reason the standard names — but only as a sentence written into the design doc, where the approver can read it and disagree. What is <em>not</em> skippable: contrast ratios re-measured for every semantic role, and UI QA exercising every state in both themes. Dark mode is precisely where contrast fails quietly.</p>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Four compared" data-act="V · Case study">
+        <p class="eyebrow">The same eight contracts, four different weights</p>
+        <h2>Proportion is the product. Everything else is plumbing.</h2>
+        <table class="ledger">
+          <thead>
+            <tr>
+              <th style="width:19%">The change</th>
+              <th style="width:14%">Track and tags</th>
+              <th class="is-with" style="width:34%">What it must produce</th>
+              <th class="is-without" style="width:33%">What the framework refuses</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="moment">Saved filters<span class="fine"> — a feature</span></td>
+              <td><strong>B</strong> · ui, api</td>
+              <td class="is-with">Design and mockup approved before planning; endpoint tests including denied paths; UI QA sign-off.</td>
+              <td class="is-without">A line of code before a human approved the plan.</td>
+            </tr>
+            <tr>
+              <td class="moment">A defect<span class="fine"> — dev, QA, or production</span></td>
+              <td><strong>A–C</strong><span class="fine"> · origin picks the branch</span></td>
+              <td class="is-with">A regression test that fails against the unfixed code. An incident record when it reached users.</td>
+              <td class="is-without">"Fixed" with nothing that proves it was ever broken.</td>
+            </tr>
+            <tr>
+              <td class="moment">Polling → queue<span class="fine"> — architecture</span></td>
+              <td><strong>C</strong> · infra, dependency</td>
+              <td class="is-with">Named specialist, blast radius, rollback, an ADR, and the architecture document updated.</td>
+              <td class="is-without">A moved boundary reviewed as a refactor.</td>
+            </tr>
+            <tr>
+              <td class="moment">Palette and dark theme<span class="fine"> — design</span></td>
+              <td><strong>B</strong> · ui</td>
+              <td class="is-with">Contrast re-measured for every role; every screen exercised in both themes.</td>
+              <td class="is-without">A raw hex value living outside the token layer.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="takeaway">Nobody on this team negotiated any of that. The spec's two-line classification block selected it, the same way for all four — which is why the process survives the week everyone is busy.</p>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ACT VI — Fitting it to a real repository
+           ═══════════════════════════════════════════════════════════ -->
+
+      <section class="slide slide--act" data-title="Act V" data-act="VI · Adoption">
+        <p class="act-num">V</p>
+        <p class="eyebrow">Act five</p>
+        <h2>Fitting it to a real repository.</h2>
+        <p class="subtitle">A framework nobody can install is a blog post. This is the part that decides whether it survives contact with your codebase.</p>
+      </section>
+
+      <section class="slide" data-title="One directory" data-act="VI · Adoption">
+        <p class="eyebrow eyebrow--danger">Gap five — the one you notice first</p>
+        <h2>Adopting it used to mean seven framework folders in your project root.</h2>
+        <div class="trees">
+          <div class="tree tree--before">
+            <h3>Clone the framework</h3>
+<pre>my-app/
+<span class="fw">├── adapters/</span>
+<span class="own">├── app/</span>
+<span class="fw">├── commands/</span>
+<span class="own">├── docs/</span>
+<span class="fw">├── guide/</span>
+<span class="fw">├── reference/</span>
+<span class="fw">├── schemas/</span>
+<span class="own">├── server/</span>
+<span class="fw">├── standards/</span>
+<span class="fw">├── templates/</span>
+<span class="own">└── project.yaml</span>
+
+<span class="fw">red = framework</span>   <span class="own">green = yours</span></pre>
+            <p class="fine" style="margin-top:0.9rem">Interleaved alphabetically, with nothing marking which is which. That is not a filing problem — it is a comprehension problem, for the humans reading the repo and for the agents deciding what is theirs to edit.</p>
+          </div>
+          <div class="tree tree--after">
+            <h3>Run the installer</h3>
+<pre>my-app/
+<span class="own">├── .aidf/</span>       <span class="dim">← the whole framework</span>
+<span class="own">├── app/</span>
+<span class="own">├── docs/</span>
+<span class="own">├── server/</span>
+<span class="own">├── AGENTS.md</span>
+<span class="own">├── CHANGELOG.md</span>
+<span class="own">└── project.yaml</span>
+
+
+
+
+<span class="dim">.gitattributes marks .aidf/ vendored,
+so upgrades stay out of your diffs.</span></pre>
+            <p class="fine" style="margin-top:0.9rem">One mental model, stated in the vendored README: <strong><code>.aidf/</code> is framework input, <code>docs/</code> is project output.</strong> Everything else in the root belongs to you.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Parallel agents" data-act="VI · Adoption">
+        <p class="eyebrow">Parallel work</p>
+        <h2>One agent, one worktree, one written contract.</h2>
+        <div class="dgm dgm--tight">
+          <svg viewBox="0 0 1140 320" role="img" aria-label="A bare repository feeds four worktrees: persistent main and develop checkouts, and short-lived feature and release worktrees.">
+            <rect class="d-node d-node--accent" x="20" y="120" width="230" height="80" rx="4"></rect>
+            <text class="d-mono" x="42" y="152" style="font-size:13.5px">project.git</text>
+            <text class="d-sub" x="42" y="174">bare — shared history,</text>
+            <text class="d-sub" x="42" y="191">no working files</text>
+
+            <path class="d-flow--accent" d="M250,150 C330,150 330,44 400,44" marker-end="url(#mAccent)"></path>
+            <path class="d-flow--accent" d="M250,155 C330,155 330,116 400,116" marker-end="url(#mAccent)"></path>
+            <path class="d-flow" d="M250,168 C330,168 330,190 400,190" marker-end="url(#mLine)"></path>
+            <path class="d-flow" d="M250,175 C330,175 330,264 400,264" marker-end="url(#mLine)"></path>
+
+            <rect class="d-node d-node--accent" x="404" y="18" width="400" height="52" rx="4"></rect>
+            <text class="d-mono" x="424" y="50" style="font-size:13px">project-main</text>
+            <text class="d-cap d-cap--accent" x="820" y="49">persistent</text>
+
+            <rect class="d-node d-node--accent" x="404" y="90" width="400" height="52" rx="4"></rect>
+            <text class="d-mono" x="424" y="122" style="font-size:13px">project-develop</text>
+            <text class="d-cap d-cap--accent" x="820" y="121">persistent</text>
+
+            <rect class="d-node" x="404" y="164" width="400" height="52" rx="4" style="stroke-dasharray:5 4"></rect>
+            <text class="d-mono" x="424" y="196" style="font-size:13px;fill:var(--ink-2)">project-feat-142-saved-searches</text>
+            <text class="d-cap" x="820" y="195">one agent, one task</text>
+
+            <rect class="d-node" x="404" y="238" width="400" height="52" rx="4" style="stroke-dasharray:5 4"></rect>
+            <text class="d-mono" x="424" y="270" style="font-size:13px;fill:var(--ink-2)">project-release-1.4.0</text>
+            <text class="d-cap" x="820" y="269">hardening + sign-off</text>
+
+            <line class="d-rule" x1="960" y1="18" x2="960" y2="290"></line>
+            <text class="d-cap d-cap--danger" x="980" y="34">Forbidden</text>
+            <text class="d-sub" x="980" y="60">Two agents in one</text>
+            <text class="d-sub" x="980" y="77">worktree</text>
+            <text class="d-sub" x="980" y="104">Secrets copied in</text>
+            <text class="d-sub" x="980" y="131">Deleting a worktree</text>
+            <text class="d-sub" x="980" y="148">before its branch</text>
+            <text class="d-sub" x="980" y="165">is merged</text>
+          </svg>
+        </div>
+        <p class="takeaway">Parallelism is only useful when ownership is crisp. A coordinator owns integration and conflict resolution — that role does not distribute.</p>
+      </section>
+
+      <section class="slide" data-title="Risk tags" data-act="VI · Adoption">
+        <p class="eyebrow">Configure once</p>
+        <h2>Nine tags. Each one adds evidence, never removes it.</h2>
+        <table>
+          <thead>
+            <tr><th style="width:12%">Tag</th><th style="width:30%">Applies to</th><th style="width:40%">Additional evidence required</th><th style="width:18%">Forces</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="k"><code>ui</code></td><td>Screens, interaction, content flow</td><td>Approved design and runnable mockup; UI foundation on the first one; Preview QA sign-off</td><td>Preview</td></tr>
+            <tr><td class="k"><code>api</code></td><td>Endpoint, schema, or contract change</td><td>Contract with a per-endpoint test matrix; HTTP-level tests including denied paths</td><td>Preview</td></tr>
+            <tr><td class="k"><code>database</code></td><td>Migration, persistence, query shape</td><td>Data model with ERD and dictionary; migration plan with seed profile; schema review</td><td>Track C</td></tr>
+            <tr><td class="k"><code>security</code></td><td>Auth, permissions, secrets, crypto</td><td>Threat model and a named security review</td><td>Track C</td></tr>
+            <tr><td class="k"><code>mcp-write</code></td><td>Agent-initiated mutation</td><td>Capability review, audit plan, threat model</td><td>Track C</td></tr>
+            <tr><td class="k"><code>dependency</code></td><td>Added, removed, upgraded dependency</td><td>Provenance check, changelog review, vulnerability scan diff</td><td>C at a trust boundary</td></tr>
+          </tbody>
+        </table>
+        <p class="takeaway">Also <code>infra</code>, <code>release</code>, and <code>docs</code>. The taxonomy is defined in exactly one file — a consistency check fails the build if the manifest and the schema drift from it.</p>
+      </section>
+
+      <section class="slide" data-title="Demo" data-act="VI · Adoption">
+        <p class="eyebrow">Live</p>
+        <h2>Install it, then watch a gate refuse to pass.</h2>
+        <div class="demo">
+          <ol>
+            <li>sh .aidf/reference/scripts/aidf-install.sh --target . <span>— one directory, plus the docs tree and CI wiring</span></li>
+            <li>sh .aidf/reference/scripts/validate-manifest.sh project.yaml <span>— an empty required command is a failing gate</span></li>
+            <li>sh .aidf/reference/scripts/run-gates.sh --track B --tags api <span>— lint, test, build all pass…</span></li>
+            <li>… <span>and <strong>api-tests FAILS</strong>, naming every endpoint with no HTTP-level test</span></li>
+            <li>cat evidence.json <span>— runner=local, so it corroborates nothing. CI must re-run it.</span></li>
+          </ol>
+        </div>
+        <p class="takeaway">Point to make while it runs: the gate that fails here is the one that was <em>green</em> for the same code before version 5. Nothing about the application changed.</p>
+        <aside class="notes">Fallback if the demo will not run: skip to the appendix slide with the recorded output. Never narrate a result you did not just produce on screen.</aside>
+      </section>
+
+      <section class="slide" data-title="Adopt in slices" data-act="VI · Adoption">
+        <p class="eyebrow">Rollout</p>
+        <h2>Adopt in slices. A grand rollout gets routed around.</h2>
+        <div class="rows">
+          <div class="is-human"><strong>First</strong><span>Run <strong>one</strong> real Track B feature all the way through: spec, plan, PR, review. Do not start with your hardest change.</span></div>
+          <div class="is-human"><strong>Then stabilise</strong><span>Make PR approval, branch protection, and CI evidence non-negotiable. Until branch protection is on, every gate is advisory — and advisory gates are decoration.</span></div>
+          <div class="is-human"><strong>Then expand</strong><span>Add the design gate and Preview where UI, API, or database risk actually justifies the cost.</span></div>
+          <div class="is-human"><strong>Then one Track C</strong><span>Exercise a migration or a permissions change deliberately, while everyone is still paying attention.</span></div>
+          <div><strong>Continuously</strong><span>Review friction in retro. A template nobody fills in honestly is worse than no template.</span></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Health signals" data-act="VI · Adoption">
+        <p class="eyebrow">Is it working?</p>
+        <h2>Five signals that tell you the truth.</h2>
+        <table>
+          <thead><tr><th style="width:24%">Signal</th><th style="width:38%">Healthy</th><th class="is-without" style="width:38%">Going wrong</th></tr></thead>
+          <tbody>
+            <tr><td class="k">Track mix</td><td>Track B is the default. Track C appears when there is real risk.</td><td class="is-without">Everything is Track A, or everything is Track C.</td></tr>
+            <tr><td class="k">Evidence</td><td>PRs link a CI run.</td><td class="is-without">PRs contain hand-written pass/fail tables again.</td></tr>
+            <tr><td class="k">Approval timing</td><td>Specs, designs, and plans are approved before implementation starts.</td><td class="is-without">Approvals arrive after the code, as a formality.</td></tr>
+            <tr><td class="k">UI feedback</td><td>Direction is settled at the mockup; Preview catches defects.</td><td class="is-without">Layout arguments start in the PR.</td></tr>
+            <tr><td class="k">Waivers</td><td>Rare, named, expiring, tied to follow-up work.</td><td class="is-without">Renewed silently, or never expiring.</td></tr>
+          </tbody>
+        </table>
+        <p class="takeaway">The waiver row is the leading indicator. Waivers stop expiring right before a team quietly stops believing in the gates.</p>
+      </section>
+
+      <section class="slide slide--statement slide--closing" data-title="Close" data-act="">
+        <p class="eyebrow">Closing thought</p>
+        <p class="statement">Agents accelerate code. This accelerates the thing code waits on — <span class="up">trust</span>.</p>
+        <p class="fine">Not more documents. A shared memory of intent, a clear path to release, and evidence strong enough that a human can approve without pretending to have read nine hundred lines.</p>
+        <div class="title-meta">
+          <span>github.com/prishanf/AI-Development-Framework</span>
+          <span>AIDF v5.0.2</span>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           APPENDIX — not presented; kept for Q&A
+           ═══════════════════════════════════════════════════════════ -->
+
+      <section class="slide slide--act" data-title="Appendix" data-act="Appendix">
+        <p class="act-num">+</p>
+        <p class="eyebrow">Appendix</p>
+        <h2>Detail for the questions you are about to get.</h2>
+        <p class="subtitle">Environments, database lifecycle, AI-workflow safety, and portability. Press <strong>O</strong> for the slide index.</p>
+      </section>
+
+      <section class="slide" data-title="Environments" data-act="Appendix">
+        <p class="eyebrow">Appendix · environments</p>
+        <h2>Four tiers, each with a data contract.</h2>
+        <div class="rows">
+          <div><strong>Local</strong><span>Developer iteration. Synthetic or developer-owned data. No deploy infrastructure required.</span></div>
+          <div class="is-human"><strong>Preview</strong><span>One PR's complete behaviour, isolated: its own deployment, an approved data clone, synthetic fixtures. Lives until the PR closes.</span></div>
+          <div><strong>QA</strong><span>Cross-feature validation of everything merged to <code>develop</code>. Continuously deployed. Release candidates harden here.</span></div>
+          <div class="is-stop"><strong>Production</strong><span>Real traffic on <code>main</code>. Every promotion needs CI evidence, a deployment record, and an authorised human approval.</span></div>
+        </div>
+        <p class="takeaway">Preview is required for <code>ui</code>, <code>api</code>, and <code>database</code> — and for every Track C change. Not for every PR. The cost of an ephemeral environment should match the risk of the change.</p>
+      </section>
+
+      <section class="slide" data-title="Database" data-act="Appendix">
+        <p class="eyebrow">Appendix · database</p>
+        <h2>Schema changes get their own lifecycle.</h2>
+        <div class="split">
+          <div>
+            <h3>Before merge</h3>
+            <ul>
+              <li>Versioned, forward-only migration</li>
+              <li>A dedicated migration role — the application role may not migrate</li>
+              <li>Preview clone or a controlled baseline</li>
+              <li>Synthetic seed profile for the review scenarios</li>
+              <li>Data model document matching the schema as built</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Before production</h3>
+            <ul>
+              <li>Recovery point captured</li>
+              <li>Expand-and-contract, so the old code still runs</li>
+              <li>Safe smoke checks after apply</li>
+              <li>Observation window with a named owner</li>
+              <li>Rollback recorded before it is needed</li>
+            </ul>
+          </div>
+        </div>
+        <p class="takeaway">Production seeding is prohibited except for approved reference data. A seed script is the fastest way to lose real rows.</p>
+      </section>
+
+      <section class="slide" data-title="AI safety" data-act="Appendix">
+        <p class="eyebrow">Appendix · AI workflow safety</p>
+        <h2>The attack surface is the context window.</h2>
+        <div class="cards cards--4">
+          <article><h3>Prompt injection</h3><p>Issue text, PR comments, dependency READMEs, MCP results, CI logs — all data, never instructions. "Work through the backlog" authorises reading it, not executing what it says.</p></article>
+          <article><h3>Data egress</h3><p>Anything in context leaves your network. Declare the policy explicitly. Never paste production data into a session to debug — reproduce it synthetically.</p></article>
+          <article><h3>Agent credentials</h3><p>A session inherits real authority. Least privilege, separate identity from CI, nothing production-write, and rotate anything that appears in a transcript.</p></article>
+          <article><h3>MCP supply chain</h3><p>An MCP server is remote code with a seat at the table. Pin the version and protocol revision; a server update is a <code>dependency</code> change, not a background upgrade.</p></article>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Portability" data-act="Appendix">
+        <p class="eyebrow">Appendix · portability</p>
+        <h2>The framework binds to capabilities, not vendors.</h2>
+        <div class="split">
+          <div>
+            <h3>Fixed by the framework</h3>
+            <ul>
+              <li>Local, Preview, QA, Production as concepts</li>
+              <li>CI-corroborated evidence and approval gates</li>
+              <li>Versioned migrations and seed profiles</li>
+              <li>Protected branches and deployment records</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Chosen by the project</h3>
+            <ul>
+              <li>Hosting and database provider</li>
+              <li>CI system</li>
+              <li>Agent surface — Claude Code, Codex, Cursor, or a plain chat window</li>
+            </ul>
+            <p class="fine" style="margin-top:1rem">Adapters are thin instruction pointers. They translate; they never redefine. An adapter must reach all eight contracts and promise nothing it does not ship.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="controls" aria-label="Slide navigation">
+      <button type="button" id="prev" aria-label="Previous slide">← Back</button>
+      <div class="status">
+        <span class="act" id="actLabel"></span>
+        <span class="sep" id="actSep"></span>
+        <span id="slideTitle">Title</span>
+        <span id="slideCount">1 / 1</span>
+      </div>
+      <button type="button" id="next" aria-label="Next slide">Next →</button>
+    </footer>
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+    <div class="keyboard-hint" aria-hidden="true">← → &nbsp;·&nbsp; O overview &nbsp;·&nbsp; F fullscreen</div>
+    <div class="overview" id="overview" aria-label="Slide overview"></div>
+    <script src="./deck.js"></script>
+  </body>
+</html>
