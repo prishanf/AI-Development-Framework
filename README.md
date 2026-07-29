@@ -60,9 +60,9 @@ Read [guide/01-overview.md](guide/01-overview.md) for the mental model and [guid
 
 ```mermaid
 flowchart LR
-    idea[Idea] --> track{Track?}
-    track -->|A| build
-    track -->|B / C| spec[Spec + classify]
+    start[Human states problem] --> track{Behavior change?}
+    track -->|No — A| isolate
+    track -->|Yes — B / C| spec[Spec + classify]
     spec --> approve{Human approves}
     approve -->|No| spec
     approve -->|Yes| uitag{ui tag?}
@@ -86,7 +86,7 @@ flowchart LR
     build -.->|stop condition| halt[Stop, hand back]
 ```
 
-[guide/03-workflow.md](guide/03-workflow.md) is the canonical definition; this diagram is derived from it. Branch timing and where the spec/plan land: [diagrams/lifecycle.md](diagrams/lifecycle.md). Who leads each activity (AI vs human vs CI): [diagrams/ai-human-flow.md](diagrams/ai-human-flow.md).
+[guide/03-workflow.md](guide/03-workflow.md) is the canonical definition — including **How a human starts** with prompt examples. This diagram is derived from it. Branch timing: [diagrams/lifecycle.md](diagrams/lifecycle.md). Who leads each activity: [diagrams/ai-human-flow.md](diagrams/ai-human-flow.md).
 
 ## Principles
 

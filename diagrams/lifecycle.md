@@ -4,10 +4,10 @@ Derived from [guide/03-workflow.md](../guide/03-workflow.md), which is canonical
 
 ```mermaid
 flowchart TD
-    idea[Idea] --> track{Which track?}
+    start[Human states problem] --> role{Behavior change?}
 
-    track -->|Track A| isolate
-    track -->|Track B or C| spec[Draft spec on develop]
+    role -->|No — Track A| isolate
+    role -->|Yes — invoke spec| spec[Draft spec on develop]
 
     spec --> questions{Questions remain?}
     questions -->|Yes| answer[Human answers]
@@ -49,6 +49,8 @@ flowchart TD
     build -.->|stop condition| halt[Stop and hand back]
     verify -.->|3 failures| halt
 ```
+
+**Start:** a human states the problem and either invokes `spec` (Track B/C) or declares Track A. Concrete prompt examples live under “How a human starts” in [guide/03-workflow.md](../guide/03-workflow.md).
 
 **Branch timing:** steps through plan approval happen on `develop` (no feature branch yet). Isolate is the cut. Build and the PR live on `feat/*` / `fix/*`. Hotfixes cut from `main` instead.
 

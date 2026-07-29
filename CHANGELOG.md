@@ -5,10 +5,11 @@
 ### Changed
 
 - **Lifecycle docs make feature-branch timing explicit.** Spec and plan are committed on the integration branch (`develop` by default) before Isolate; the `feat/*` / `fix/*` branch is cut only after plan approval. Clarified in [guide/03-workflow.md](guide/03-workflow.md) and [standards/branching.md](standards/branching.md); [diagrams/lifecycle.md](diagrams/lifecycle.md), the README summary diagram, and [diagrams/worktree-flow.md](diagrams/worktree-flow.md) now show Isolate as its own step.
+- **How a human starts is explicit.** [guide/03-workflow.md](guide/03-workflow.md) gains a kickoff section with Track A / B / C prompt examples and expected agent responses. Discover is a human action; lifecycle and AI/human diagrams begin with “human states problem”; [`commands/spec.md`](commands/spec.md) states the human invokes the role.
 
 ### Added
 
-- **[diagrams/ai-human-flow.md](diagrams/ai-human-flow.md)** — swimlane of which lifecycle activities AI, human, and CI lead, with a cheat-sheet table. Complements [diagrams/responsibility-matrix.md](diagrams/responsibility-matrix.md).
+- **[diagrams/ai-human-flow.md](diagrams/ai-human-flow.md)** — swimlane of which lifecycle activities AI, human, and CI lead, with a cheat-sheet table (including the Discover kickoff). Complements [diagrams/responsibility-matrix.md](diagrams/responsibility-matrix.md).
 
 ## [5.1.1] — 2026-07-29
 

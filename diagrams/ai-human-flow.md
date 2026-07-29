@@ -2,12 +2,13 @@
 
 Derived from [guide/03-workflow.md](../guide/03-workflow.md) (canonical lifecycle) and [guide/04-roles.md](../guide/04-roles.md). If this diagram and those files disagree, this diagram is wrong.
 
-Swimlanes show **who leads** each activity. CI corroborates evidence and enforces protected-branch rules; it does not replace human approval. Ownership by irreversibility is summarized in [responsibility-matrix.md](responsibility-matrix.md).
+Swimlanes show **who leads** each activity. CI corroborates evidence and enforces protected-branch rules; it does not replace human approval. Ownership by irreversibility is summarized in [responsibility-matrix.md](responsibility-matrix.md). How a human kicks off the process (with prompt examples): [guide/03-workflow.md](../guide/03-workflow.md) § How a human starts.
 
 ```mermaid
 flowchart TB
     subgraph human["Human"]
         direction TB
+        h0[State problem + invoke spec or Track A]
         h1[Answer open questions]
         h2[Approve spec + classification]
         h3[Approve design + mockup when ui]
@@ -40,6 +41,8 @@ flowchart TB
         c3[Deploy preview / QA / production]
     end
 
+    h0 -->|Track A| a4
+    h0 -->|Track B/C| a1
     a1 --> h1
     h1 --> a1
     a1 --> h2
@@ -72,6 +75,7 @@ flowchart TB
 
 | Step | AI | Human | CI |
 |---|---|---|---|
+| **Start (Discover)** | — | State the problem; invoke `spec` or declare Track A | — |
 | Spec + classify | Draft, recommend track/tags, ask questions | Answer questions; approve scope and classification | — |
 | Design *(ui)* | Draft design + throwaway mockup | Approve design **and** mockup together | — |
 | Plan | Draft plan; leave `Approval.decision` pending | Approve plan before any implementation | — |
@@ -85,4 +89,4 @@ flowchart TB
 | Release | Prepare notes, tag checklist, docs | Production approval | Deploy; annotated tag on authorized tip |
 | Stop / waive | Stop and hand back; **never** waive a gate | Decide next action; waive only with expiry | Expire waivers |
 
-**Hard boundaries:** humans own intent and irreversible actions (scope, plan, merge, production). Agents draft and implement within those gates. CI alone corroborates evidence — an agent cannot validate its own work.
+**Hard boundaries:** humans own the kickoff, intent, and irreversible actions (scope, plan, merge, production). Agents draft and implement within those gates. CI alone corroborates evidence — an agent cannot validate its own work.
