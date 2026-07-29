@@ -41,7 +41,7 @@ These run before merge. This table governs pull requests only.
 | Data model (ERD + data dictionary) current | — | Required if `database` | Required if state changes |
 | Migration validation and schema review | — | Required if `database` | Required if state changes |
 | UI foundation approved (first `ui` change only) | — | Required if `ui` | Required if `ui` |
-| Changelog entry under `[Unreleased]` | Optional | Required | Required |
+| Changelog entry under a version heading — never `[Unreleased]` | Optional | Required | Required |
 | Threat model / specialist review | — | — | Required for `security`, `mcp-write`, `infra` |
 | Dependency provenance and vulnerability diff | — | Required if `dependency` | Required if `dependency` |
 

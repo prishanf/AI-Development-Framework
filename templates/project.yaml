@@ -4,7 +4,7 @@
 
 framework:
   name: ai-development-framework
-  version: 5.1.1
+  version: 5.2.0
   project_id: replace-with-project-id
   # Where the vendored framework lives in this repository. One directory,
   # so project folders are not interleaved with framework reference material.
@@ -50,7 +50,7 @@ documents:
   plans: docs/plans
   architecture: docs/architecture
   data_model: docs/architecture/data-model.md   # ERD + data dictionary; required by the `database` tag
-  changelog: CHANGELOG.md                       # required entry for Track B/C; optional for Track A
+  changelog: CHANGELOG.md                       # required entry for Track B/C; optional for Track A. Version headings only -- no [Unreleased]
   decisions: docs/decisions
   wiki: docs/wiki
   designs: docs/design         # design docs + throwaway mockups; see standards/ui-and-preview.md

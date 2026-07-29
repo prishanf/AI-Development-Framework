@@ -7,8 +7,8 @@ stateDiagram-v2
     [*] --> BareRepoCloned
     BareRepoCloned --> MainWorktree
     BareRepoCloned --> DevelopWorktree
-    DevelopWorktree --> Approved: spec + plan approved
-    Approved --> BranchCreated: branch from develop
+    DevelopWorktree --> Approved: spec + plan approved on develop
+    Approved --> BranchCreated: Isolate — branch from develop
     BranchCreated --> FeatureWorktreeReady
     FeatureWorktreeReady --> AgentSession
     AgentSession --> Implementing
@@ -21,3 +21,5 @@ stateDiagram-v2
     MergedToDevelop --> FeatureWorktreeRemoved
     FeatureWorktreeRemoved --> [*]
 ```
+
+Spec and plan are approved on `develop` before `BranchCreated`. See [guide/03-workflow.md](../guide/03-workflow.md) steps 2, 7, and 9, and [lifecycle.md](lifecycle.md).

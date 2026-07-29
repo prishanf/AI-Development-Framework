@@ -36,3 +36,5 @@ quadrantChart
 | Deploy | Prepare | Approve | Execute |
 
 Two rows carry most of the weight. **Corroboration is CI-only** — an agent cannot validate its own work, which is why the Verification row splits reporting from corroborating. And **waiving a gate is human-only, never AI** — an agent that could waive a gate could satisfy every gate.
+
+For the same split as a lifecycle swimlane (who acts at each step), see [ai-human-flow.md](ai-human-flow.md).

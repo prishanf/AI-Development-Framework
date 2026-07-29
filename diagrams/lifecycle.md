@@ -4,10 +4,10 @@ Derived from [guide/03-workflow.md](../guide/03-workflow.md), which is canonical
 
 ```mermaid
 flowchart TD
-    idea[Idea] --> track{Which track?}
+    start[Human states problem] --> role{Behavior change?}
 
-    track -->|Track A| build
-    track -->|Track B or C| spec[Draft spec]
+    role -->|No — Track A| isolate
+    role -->|Yes — invoke spec| spec[Draft spec on develop]
 
     spec --> questions{Questions remain?}
     questions -->|Yes| answer[Human answers]
@@ -16,15 +16,18 @@ flowchart TD
     classify --> approval{Human approves scope?}
     approval -->|No| spec
     approval -->|Yes| uitag{ui tag?}
-    uitag -->|Yes| design[Design: wireframes/screens]
-    uitag -->|No| issue[Create issue]
+    uitag -->|Yes| design[Design + mockup on develop]
+    uitag -->|No| issue[Create / update issue]
     design --> designapprove{Human approves design?}
     designapprove -->|No| design
     designapprove -->|Yes| issue
-    issue --> plan[Implementation plan]
+    issue --> plan[Implementation plan on develop]
     plan --> planapprove{Human approves plan? Track B/C}
     planapprove -->|No| plan
-    planapprove -->|Yes| build[Feature worktree off develop, implement + test]
+    planapprove -->|Yes| isolate
+
+    isolate[Isolate: create feat/fix from develop + worktree]
+    isolate --> build[Build on feature branch: implement + test]
 
     build --> verify[Verify: emit corroborated evidence]
     verify --> preview{ui, api or database tag?}
@@ -47,4 +50,10 @@ flowchart TD
     verify -.->|3 failures| halt
 ```
 
+**Start:** a human states the problem and either invokes `spec` (Track B/C) or declares Track A. Concrete prompt examples live under “How a human starts” in [guide/03-workflow.md](../guide/03-workflow.md).
+
+**Branch timing:** steps through plan approval happen on `develop` (no feature branch yet). Isolate is the cut. Build and the PR live on `feat/*` / `fix/*`. Hotfixes cut from `main` instead.
+
 The dashed edges are not exceptional paths. Stopping on a repeated failure or an invalidated assumption is a normal, successful outcome — see "Stop conditions" in the workflow.
+
+Who does each step (AI vs human): [ai-human-flow.md](ai-human-flow.md). Worktree layout after Isolate: [worktree-flow.md](worktree-flow.md).

@@ -223,10 +223,13 @@ repository root belongs to the project.
     write(os.path.join(target, "CHANGELOG.md"), """# Changelog
 
 All notable changes to this project are recorded here, most recent first.
-Track B/C changes are required to add an entry under `[Unreleased]`; Track A
-is optional. See `%s/standards/quality-gates.md`.
+Track B/C changes are required to add an entry; Track A is optional. Every
+heading names a version -- there is no `[Unreleased]` section, and
+`check-changelog.sh` rejects one. See `%s/standards/quality-gates.md`.
 
-## [Unreleased]
+## [0.1.0] — in development
+
+- Project initialized with the AI Development Framework.
 """ % root)
 
     # CI and repository controls belong at the project root, not in .aidf.

@@ -2,7 +2,7 @@
 
 **AIDF** is a lightweight, AI-agnostic operating system for building software with coding agents. One shared workflow, vocabulary, document lifecycle, and set of safety boundaries — usable with Claude Code, Codex, Cursor, Gemini CLI, Aider, OpenHands, or whatever comes next.
 
-**Version:** 5.1.1 · **Status:** usable foundation with running gates
+**Version:** 5.2.0 · **Status:** usable foundation with running gates
 
 ## Process proportional to risk
 
@@ -60,9 +60,9 @@ Read [guide/01-overview.md](guide/01-overview.md) for the mental model and [guid
 
 ```mermaid
 flowchart LR
-    idea[Idea] --> track{Track?}
-    track -->|A| build
-    track -->|B / C| spec[Spec + classify]
+    start[Human states problem] --> track{Behavior change?}
+    track -->|No — A| isolate
+    track -->|Yes — B / C| spec[Spec + classify]
     spec --> approve{Human approves}
     approve -->|No| spec
     approve -->|Yes| uitag{ui tag?}
@@ -73,7 +73,8 @@ flowchart LR
     designapprove -->|Yes| plan[Plan]
     plan --> planapprove{Human approves plan}
     planapprove -->|No| plan
-    planapprove -->|Yes| build[Worktree off develop, build + tests]
+    planapprove -->|Yes| isolate[Isolate: feat branch from develop]
+    isolate --> build[Build + tests on feature branch]
     build --> verify[Verify: corroborated evidence]
     verify --> pr[Pull request to develop]
     pr --> aireview[AI review on PR]
@@ -85,7 +86,7 @@ flowchart LR
     build -.->|stop condition| halt[Stop, hand back]
 ```
 
-[guide/03-workflow.md](guide/03-workflow.md) is the canonical definition; this diagram is derived from it.
+[guide/03-workflow.md](guide/03-workflow.md) is the canonical definition — including **How a human starts** with prompt examples. This diagram is derived from it. Branch timing: [diagrams/lifecycle.md](diagrams/lifecycle.md). Who leads each activity: [diagrams/ai-human-flow.md](diagrams/ai-human-flow.md).
 
 ## Principles
 

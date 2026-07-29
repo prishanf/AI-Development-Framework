@@ -4,6 +4,8 @@
 
 Turn an idea into a reviewable, testable feature specification — including its classification — without beginning implementation.
 
+The human starts this role: they state the problem in plain language and ask for a feature spec (see “How a human starts” in `guide/03-workflow.md`). This command does not invent a product idea unprompted, and it does not create a feature branch.
+
 ## Prompt contract
 
 ```text
